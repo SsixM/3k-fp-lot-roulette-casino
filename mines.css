@@ -1,0 +1,150 @@
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background-color: #0f141f;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.container {
+    width: 320px;
+    background: linear-gradient(180deg, #0d1119, #0f141f);
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.8);
+}
+
+main {
+    padding: 20px;
+}
+
+.grid-container {
+    background: #0d1119;
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr); /* Фиксированное 5x5 поле */
+    gap: 5px;
+}
+
+.grid-button {
+    width: 100%;
+    padding-bottom: 100%; /* Сохранение пропорции 1:1 */
+    background-color: #2d5a8c;
+    border: none;
+    border-radius: 5px;
+    cursor: default;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.1s;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+.grid-button:hover {
+    transform: translateY(1px) scale(0.99); /* Меньше уменьшение для параллакс-эффекта */
+}
+
+.grid-button.active::after {
+    content: '★';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 24px;
+    color: #ffd700;
+    animation: starAppear 0.5s ease-out;
+}
+
+.level-info {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    background-color: #0a0e15;
+    color: #7a90b0;
+    font-size: 14px;
+    gap: 5px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.arrow {
+    background: none;
+    border: none;
+    color: #7a90b0;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 0 5px;
+    transition: color 0.3s;
+}
+
+.arrow:hover {
+    color: #fff;
+}
+
+#trapCount {
+    font-weight: bold;
+    margin: 0 10px;
+}
+
+.button-group {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.action-button {
+    flex: 1;
+    padding: 12px;
+    background-color: #2d5a8c;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.1s;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+.action-button:hover {
+    background-color: #244b75;
+    transform: translateY(-2px);
+}
+
+.action-button:active {
+    transform: translateY(0);
+}
+
+.reset-button {
+    padding: 12px;
+    background-color: #1a2d4d;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.1s;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+.reset-button:hover {
+    background-color: #15233e;
+    transform: translateY(-2px);
+}
+
+.reset-button:active {
+    transform: translateY(0);
+}
+
+@keyframes starAppear {
+    0% { opacity: 0; transform: translate(-50%, -50%) scale(0); }
+    100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
