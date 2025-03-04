@@ -40,7 +40,10 @@ document.head.appendChild(styleSheet);
 
 // Переход на страницу игры по клику
 document.getElementById('menuCard').addEventListener('click', () => {
-    window.location.href = 'mines.html';
+    window.location.href = 'mines/mines.html';
+});
+document.getElementById('menuMoney').addEventListener('click', () => {
+    window.location.href = 'Coin/Coin.html';
 });
 
 window.addEventListener('load', createStars);
