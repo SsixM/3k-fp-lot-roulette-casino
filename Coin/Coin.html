@@ -2,33 +2,37 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
     <title>Монеточка</title>
     <link rel="stylesheet" href="Coin.css">
 </head>
 <body>
-<div class="stars"></div>
-<div class="container">
-    <div class="rounds-display" id="roundsDisplay"></div>
+    <div class="stars"></div>
+    <button class="menu-button" id="menuButton">←</button>
+    <div class="container">
+        <div class="rounds-display" id="roundsDisplay"></div>
 
-    <div class="coin-container">
-        <div class="coin" id="coin">
-            <div class="front">🦅</div>
-            <div class="back">₽</div>
+        <div class="coin-container">
+            <div class="coin" id="coin">
+                <div class="front">🦅</div>
+                <div class="back">₽</div>
+            </div>
         </div>
+
+        <div class="rounds-container">
+            <button class="round-adjust" id="decreaseRounds">-</button>
+            <span class="rounds-amount" id="roundsAmount">1</span>
+            <button class="round-adjust" id="increaseRounds">+</button>
+        </div>
+
+        <button class="signal-button" id="signalButton">Получить сигнал</button>
+
+        <div class="result-display" id="resultDisplay"></div>
     </div>
-
-    <div class="rounds-container">
-        <button class="round-adjust" id="decreaseRounds">-</button>
-        <span class="rounds-amount" id="roundsAmount">1</span>
-        <button class="round-adjust" id="increaseRounds">+</button>
+    <div class="input-container">
+        <input type="text" id="userInput" class="user-input" placeholder="Введите текст" required>
     </div>
-
-    <button class="signal-button" id="signalButton">Получить сигнал</button>
-
-    <div class="result-display" id="resultDisplay"></div>
-</div>
-<script src="Coin.js"></script>
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="Coin.js"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </body>
 </html>

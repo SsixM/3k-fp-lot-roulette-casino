@@ -2,14 +2,17 @@ body {
     background-color: #0d1119;
     margin: 0;
     padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     min-height: 100vh;
     font-family: Arial, sans-serif;
     color: white;
     position: relative;
-    overflow: hidden;
+    overflow-x: hidden;
+    display: flex;
+    justify-content: center; /* Центрирование по горизонтали */
+    align-items: center; /* Центрирование по вертикали */
+    touch-action: pan-y;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 .stars {
@@ -22,6 +25,34 @@ body {
     overflow: hidden;
 }
 
+.menu-button {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background: transparent;
+    border: none;
+    color: #7a90b0;
+    font-size: 24px;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: color 0.3s, transform 0.1s;
+    z-index: 3;
+}
+
+.menu-button:hover {
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+.menu-button:active {
+    transform: translateY(0);
+}
+
 .container {
     display: flex;
     flex-direction: column;
@@ -30,7 +61,7 @@ body {
     padding: 20px;
     background-color: #0f141f;
     border-radius: 15px;
-    width: 90%;
+    width: 50%;
     max-width: 400px;
     position: relative;
     z-index: 1;
@@ -72,6 +103,7 @@ body {
     height: 100px;
     position: relative;
     perspective: 1000px;
+    margin: 0 auto;
 }
 
 .coin {
@@ -109,11 +141,11 @@ body {
 }
 
 .coin.result-heads {
-    animation: flipToHeads 2.5s cubic-bezier(0.25, 0.1, 0.25, 1) forwards; /* Быстро в начале, медленно в конце */
+    animation: flipToHeads 2.5s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
 }
 
 .coin.result-tails {
-    animation: flipToTails 2.5s cubic-bezier(0.25, 0.1, 0.25, 1) forwards; /* Быстро в начале, медленно в конце */
+    animation: flipToTails 2.5s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
 }
 
 .rounds-container {
@@ -175,6 +207,49 @@ body {
     min-height: 20px;
 }
 
+.result-display.error {
+    color: #ff4444;
+    background: linear-gradient(145deg, #2b1a1a, #3a2525);
+}
+
+.input-container {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 400px;
+    display: flex;
+    justify-content: center;
+    z-index: 2;
+}
+
+.user-input {
+    width: 100%;
+    padding: 12px 15px;
+    background: linear-gradient(145deg, #1a1f2b, #252b3a);
+    border: none;
+    border-radius: 20px;
+    color: #7a90b0;
+    font-size: 16px;
+    outline: none;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    -webkit-text-size-adjust: 100%;
+    touch-action: manipulation;
+}
+
+.user-input::placeholder {
+    color: #5a6e8a;
+    text-align: center;
+}
+
+.user-input:focus {
+    background: linear-gradient(145deg, #252b3a, #1a1f2b);
+    color: #fff;
+    font-size: 16px;
+}
+
 @keyframes bounceSignal {
     0% { transform: translateY(0) rotateY(0deg); }
     50% { transform: translateY(-20px) rotateY(180deg); }
@@ -183,14 +258,14 @@ body {
 
 @keyframes flipToHeads {
     0% { transform: translateY(0) rotateY(0deg); }
-    40% { transform: translateY(-40px) rotateY(1080deg); } /* Быстрое вращение и прыжок */
-    70% { transform: translateY(-20px) rotateY(1440deg); } /* Замедление */
-    100% { transform: translateY(0) rotateY(1800deg); } /* Плавное завершение на орле */
+    40% { transform: translateY(-40px) rotateY(1080deg); }
+    70% { transform: translateY(-20px) rotateY(1440deg); }
+    100% { transform: translateY(0) rotateY(1800deg); }
 }
 
 @keyframes flipToTails {
     0% { transform: translateY(0) rotateY(0deg); }
-    40% { transform: translateY(-40px) rotateY(1080deg); } /* Быстрое вращение и прыжок */
-    70% { transform: translateY(-20px) rotateY(1620deg); } /* Замедление */
-    100% { transform: translateY(0) rotateY(1980deg); } /* Плавное завершение на решке */
+    40% { transform: translateY(-40px) rotateY(1080deg); }
+    70% { transform: translateY(-20px) rotateY(1620deg); }
+    100% { transform: translateY(0) rotateY(1980deg); }
 }

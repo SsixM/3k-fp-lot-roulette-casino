@@ -1,27 +1,40 @@
+// Создание падающих звёзд
 function createStars() {
     const starsContainer = document.querySelector('.stars');
+
     for (let i = 0; i < 50; i++) {
         const star = document.createElement('div');
         star.style.position = 'absolute';
         star.style.width = '2px';
-        star.style.height = '2px';
-        star.style.background = '#fff';
+        star.style.height = `${Math.random() * 4 + 2}px`;
+        star.style.background = 'linear-gradient(to bottom, #fff, rgba(255, 255, 255, 0))';
+        star.style.boxShadow = '0 0 5px #fff';
         star.style.borderRadius = '50%';
-        const x = Math.random() * 100;
-        const y = Math.random() * 100;
+
+        const x = Math.random() * window.innerWidth;
+        const y = Math.random() * window.innerHeight * -1;
         const duration = Math.random() * 3 + 2;
-        star.style.left = `${x}%`;
-        star.style.top = `${y}%`;
+
+        star.style.left = `${x}px`;
+        star.style.top = `${y}px`;
         star.style.animation = `fall ${duration}s linear infinite`;
+
         starsContainer.appendChild(star);
     }
 }
 
+// Добавление стилей анимации
 const styleSheet = document.createElement('style');
 styleSheet.textContent = `
     @keyframes fall {
-        0% { transform: translateY(-100vh); opacity: 1; }
-        100% { transform: translateY(100vh); opacity: 0.5; }
+        0% {
+            transform: translateY(-100vh);
+            opacity: 1;
+        }
+        100% {
+            transform: translateY(100vh);
+            opacity: 0;
+        }
     }
 `;
 document.head.appendChild(styleSheet);
@@ -33,6 +46,8 @@ const roundsDisplay = document.getElementById('roundsDisplay');
 const roundsAmount = document.getElementById('roundsAmount');
 const decreaseRounds = document.getElementById('decreaseRounds');
 const increaseRounds = document.getElementById('increaseRounds');
+const userInput = document.getElementById('userInput');
+const menuButton = document.getElementById('menuButton');
 
 let isFlipping = false;
 let currentRounds = 1;
@@ -85,9 +100,18 @@ increaseRounds.addEventListener('click', () => {
 
 // Получение сигнала и подбрасывание монетки
 signalButton.addEventListener('click', () => {
+    const userInputValue = userInput.value.trim();
+
+    if (!userInputValue) {
+        resultDisplay.textContent = 'Ошибка: Поле ввода не может быть пустым!';
+        resultDisplay.classList.add('error');
+        return;
+    } else {
+        resultDisplay.classList.remove('error');
+    }
+
     if (isFlipping) return;
 
-    // Если все раунды завершены, сбрасываем игру
     if (completedRounds >= currentRounds) {
         resetGame();
         return;
@@ -123,11 +147,45 @@ signalButton.addEventListener('click', () => {
     }, 1500);
 });
 
+// Переход на menu.html
+menuButton.addEventListener('click', () => {
+    window.location.href = 'menu.html';
+});
+
 // Telegram Web App
 if (window.Telegram) {
     Telegram.WebApp.ready();
     Telegram.WebApp.expand();
 }
+
+// Сохранение значения поля ввода в localStorage
+const savedValue = localStorage.getItem('userInputValue');
+if (savedValue) {
+    userInput.value = savedValue;
+}
+
+userInput.addEventListener('input', () => {
+    localStorage.setItem('userInputValue', userInput.value);
+});
+
+// Блокировка масштабирования
+document.addEventListener('gesturestart', function (e) {
+    e.preventDefault();
+}, { passive: false });
+
+document.addEventListener('gesturechange', function (e) {
+    e.preventDefault();
+}, { passive: false });
+
+document.addEventListener('gestureend', function (e) {
+    e.preventDefault();
+}, { passive: false });
+
+document.addEventListener('touchmove', function (e) {
+    if (e.touches.length > 1) {
+        e.preventDefault();
+    }
+}, { passive: false });
 
 window.addEventListener('load', () => {
     createStars();
