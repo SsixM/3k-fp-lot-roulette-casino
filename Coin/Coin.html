@@ -7,33 +7,28 @@
     <link rel="stylesheet" href="Coin.css">
 </head>
 <body>
-    <div class="container">
-        <div class="stats">
-            <span class="count">1</span>
-            <div class="coin-container">
-                <div class="coin" id="coin"></div>
-            </div>
-            <span class="multiplier">X1.95</span>
-        </div>
+<div class="stars"></div>
+<div class="container">
+    <div class="rounds-display" id="roundsDisplay"></div>
 
-        <div class="options">
-            <div class="result heads">
-                <span>Орёл</span>
-            </div>
-            <div class="result tails">
-                <span>Решка</span>
-            </div>
+    <div class="coin-container">
+        <div class="coin" id="coin">
+            <div class="front">🦅</div>
+            <div class="back">₽</div>
         </div>
-
-        <div class="bet-container">
-            <button class="bet-adjust">-</button>
-            <span class="bet-amount">10 $</span>
-            <button class="bet-adjust">+</button>
-        </div>
-
-        <button class="start-button" onclick="flipCoin()">Показать результат</button>
     </div>
-    <script src="Coin.js"></script>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <div class="rounds-container">
+        <button class="round-adjust" id="decreaseRounds">-</button>
+        <span class="rounds-amount" id="roundsAmount">1</span>
+        <button class="round-adjust" id="increaseRounds">+</button>
+    </div>
+
+    <button class="signal-button" id="signalButton">Получить сигнал</button>
+
+    <div class="result-display" id="resultDisplay"></div>
+</div>
+<script src="Coin.js"></script>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 </body>
 </html>
