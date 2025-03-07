@@ -1,10 +1,14 @@
 body {
     margin: 0;
-    font-family: 'Segoe UI', Arial, sans-serif;
-    background-color: #0f141f;
+    font-family: 'Arial', sans-serif;
+    background-color: #101010;
     color: #fff;
     position: relative;
-    min-height: 100vh; /* Ensures body takes at least full viewport height */
+    min-height: 100vh;
+    overflow-x: hidden; /* Предотвращаем горизонтальную прокрутку */
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .stars {
@@ -14,77 +18,108 @@ body {
     width: 100%;
     height: 100%;
     pointer-events: none;
+    overflow: hidden;
 }
 
 .container {
     display: flex;
-    flex-wrap: wrap; /* Allows menus to wrap if they don't fit horizontally */
-    justify-content: center; /* Centers the menus horizontally */
-    align-items: center; /* Centers the menus vertically */
-    gap: 20px; /* Adds spacing between menu elements */
-    padding: 20px; /* Adds padding around the container */
+    flex-direction: column; /* Карточки в колонку для мобильных */
+    justify-content: center;
+    align-items: center;
+    gap: 15px; /* Уменьшенный отступ между карточками */
+    padding: 10px; /* Уменьшенный отступ контейнера */
     position: relative;
     z-index: 1;
-    min-height: 100vh; /* Ensures container takes full height */
+    width: 100%; /* Полная ширина */
+    max-width: 340px; /* Максимальная ширина для мобильных */
+    min-height: 100vh;
+    box-sizing: border-box;
 }
 
-.menu {
+.game-card {
+    background: linear-gradient(180deg, #181818, #202020);
+    border-radius: 12px;
+    width: 100%; /* Карточка на всю доступную ширину */
+    max-width: 500px; /* Максимальная ширина карточки */
+    height: 360px; /* Уменьшенная высота для мобильных */
     text-align: center;
-    background: linear-gradient(180deg, #0d1119, #0f141f);
-    padding: 40px;
-    border-radius: 15px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.8);
-    cursor: pointer;
-    position: relative; /* For pseudo-element positioning */
-    transition: transform 0.2s ease; /* Smooth lift/lower transition */
-    width: 300px; /* Fixed width for consistency */
+    padding: 15px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s ease;
 }
 
-.menu::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(255, 255, 255, 0); /* Transparent by default */
-    border-radius: inherit; /* Matches parent border-radius */
-    transition: background 0.4s ease; /* Smooth background transition */
-    pointer-events: none; /* Prevents interference with interaction */
+.game-card:hover {
+    transform: scale(1.03); /* Меньший эффект увеличения для мобильных */
 }
 
-.menu:hover::before {
-    background: rgba(32, 43, 66, 0.2); /* Slight overlay on hover */
+.game-image {
+    width: 100%;
+    height: 260px; /* Уменьшенная высота изображения */
+    overflow: hidden;
+    border-radius: 8px;
+    margin-bottom: 15px;
 }
 
-.menu:hover {
-    transform: translateY(-5px); /* Lift on hover */
+.game-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 h1 {
-    margin: 0 0 20px;
-    font-size: 32px;
+    margin: 0 0 15px;
+    font-size: 24px; /* Уменьшенный размер шрифта для мобильных */
     color: #fff;
+    text-shadow: 0 0 5px #00ffcc;
 }
 
-.image-container {
+.open-button {
+    background: linear-gradient(90deg, #28a745, #218838);
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 16px; /* Уменьшенный шрифт кнопки */
+    padding: 8px 16px;
+    cursor: pointer;
     width: 100%;
-    height: 200px; /* Fixed height for cropping */
-    overflow: hidden; /* Crops content */
-    margin: 0 auto 20px; /* Center and bottom margin */
-    position: relative;
+    transition: background 0.3s ease, transform 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
-.menu-image {
-    width: 100%; /* Stretches to container width */
-    height: auto; /* Maintains aspect ratio */
-    position: absolute;
-    top: -200px; /* Adjust this value based on your image */
-    left: 0;
+.open-button:hover {
+    background: linear-gradient(90deg, #218838, #28a745);
+    transform: translateY(-2px);
 }
 
-p {
-    margin: 0;
-    color: #7a90b0;
-    line-height: 1.5;
+.open-button:active {
+    transform: translateY(0);
+}
+
+/* Медиа-запрос для экранов шире 700px (планшеты и десктопы) */
+@media (min-width: 700px) {
+    .container {
+        flex-direction: row; /* Карточки в ряд для больших экранов */
+        max-width: 700px;
+    }
+
+    .game-card {
+        max-width: 300px;
+        height: 400px;
+    }
+
+    .game-image {
+        height: 300px;
+    }
+
+    h1 {
+        font-size: 28px;
+    }
+
+    .open-button {
+        font-size: 18px;
+        padding: 10px 20px;
+    }
 }

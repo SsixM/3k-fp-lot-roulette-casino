@@ -1,8 +1,6 @@
-// Создание падающих звёзд
 function createStars() {
     const starsContainer = document.querySelector('.stars');
-
-    for (let i = 0; i < 50; i++) {
+    for (let i = 0; i < 100; i++) { // Increased to 100 stars
         const star = document.createElement('div');
         star.style.position = 'absolute';
         star.style.width = '2px';
@@ -10,6 +8,7 @@ function createStars() {
         star.style.background = 'linear-gradient(to bottom, #fff, rgba(255, 255, 255, 0))';
         star.style.boxShadow = '0 0 5px #fff';
         star.style.borderRadius = '50%';
+        star.style.opacity = 0;
 
         const x = Math.random() * window.innerWidth;
         const y = Math.random() * window.innerHeight * -1;
@@ -23,34 +22,18 @@ function createStars() {
     }
 }
 
-// Добавление стилей анимации
-const styleSheet = document.createElement('style');
-styleSheet.textContent = `
-    @keyframes fall {
-        0% {
-            transform: translateY(-100vh);
-            opacity: 1;
-        }
-        100% {
-            transform: translateY(100vh);
-            opacity: 0;
-        }
-    }
-`;
-document.head.appendChild(styleSheet);
-
 document.addEventListener('DOMContentLoaded', () => {
     const grid = document.getElementById('grid');
     const trapCountElement = document.getElementById('trapCount');
     const decreaseButton = document.getElementById('decrease');
     const increaseButton = document.getElementById('increase');
     const mineButton = document.getElementById('mineButton');
-    const resetButton = document.getElementById('resetButton');
     const userInput = document.getElementById('userInput');
     const menuButton = document.getElementById('menuButton');
-    let trapCount = 7;
+    const errorMessage = document.getElementById('errorMessage');
+    let trapCount = 1; // Start with 1 as shown in the image
+    const allowedTraps = [1, 3, 5, 7];
 
-    // Фиксированное 5x5 поле
     function updateGrid() {
         grid.innerHTML = '';
         for (let i = 0; i < 25; i++) {
@@ -60,58 +43,84 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function checkInput() {
+        const inputValue = userInput.value.trim();
+        if (!inputValue) {
+            mineButton.classList.add('disabled');
+            errorMessage.textContent = 'Введите текст для продолжения!';
+            errorMessage.style.display = 'block';
+            return false;
+        } else {
+            mineButton.classList.remove('disabled');
+            errorMessage.style.display = 'none';
+            return true;
+        }
+    }
+
     decreaseButton.addEventListener('click', () => {
-        if (trapCount > 1) {
-            trapCount--;
+        const currentIndex = allowedTraps.indexOf(trapCount);
+        if (currentIndex > 0) {
+            trapCount = allowedTraps[currentIndex - 1];
             trapCountElement.textContent = trapCount;
         }
     });
 
     increaseButton.addEventListener('click', () => {
-        if (trapCount < 15) {
-            trapCount++;
+        const currentIndex = allowedTraps.indexOf(trapCount);
+        if (currentIndex < allowedTraps.length - 1) {
+            trapCount = allowedTraps[currentIndex + 1];
             trapCountElement.textContent = trapCount;
         }
     });
 
     mineButton.addEventListener('click', () => {
+        if (mineButton.classList.contains('loading') || mineButton.classList.contains('disabled')) return;
+
+        if (!checkInput()) return;
+
+        mineButton.classList.add('loading');
         const buttons = grid.getElementsByClassName('grid-button');
         for (let button of buttons) {
             button.classList.remove('active');
         }
-        for (let i = 0; i < trapCount; i++) {
-            const randomIndex = Math.floor(Math.random() * buttons.length);
-            if (!buttons[randomIndex].classList.contains('active')) {
-                buttons[randomIndex].classList.add('active');
-            } else {
-                i--;
+
+        setTimeout(() => {
+            mineButton.classList.remove('loading');
+            const trapIndices = new Set();
+            while (trapIndices.size < trapCount) {
+                const randomIndex = Math.floor(Math.random() * buttons.length);
+                trapIndices.add(randomIndex);
             }
-        }
+            trapIndices.forEach(index => {
+                buttons[index].classList.add('active');
+            });
+
+            const stars = document.querySelectorAll('.stars div');
+            stars.forEach((star, index) => {
+                setTimeout(() => {
+                    star.style.animation = 'fadeInStars 0.5s ease-out forwards';
+                }, index * 50);
+            });
+        }, 1000);
     });
 
-    resetButton.addEventListener('click', () => {
-        const buttons = grid.getElementsByClassName('grid-button');
-        for (let button of buttons) {
-            button.classList.remove('active');
-        }
+    userInput.addEventListener('input', () => {
+        checkInput();
+        localStorage.setItem('userInputValue', userInput.value);
     });
 
-    // Переход на menu.html
     menuButton.addEventListener('click', () => {
         window.location.href = 'file:///C:/Users/slava/OneDrive/Документы/GitHub/DevLegacy/3k-fp-lot-roulette-casino/menu.html';
     });
 
-    // Сохранение значения поля ввода в localStorage
     const savedValue = localStorage.getItem('userInputValue');
     if (savedValue) {
         userInput.value = savedValue;
+        checkInput();
+    } else {
+        checkInput();
     }
 
-    userInput.addEventListener('input', () => {
-        localStorage.setItem('userInputValue', userInput.value);
-    });
-
-    // Блокировка масштабирования
     document.addEventListener('gesturestart', function (e) {
         e.preventDefault();
     }, { passive: false });
@@ -130,7 +139,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }, { passive: false });
 
-    // Инициализация
     createStars();
     updateGrid();
 });

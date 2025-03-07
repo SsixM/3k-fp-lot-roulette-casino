@@ -1,7 +1,9 @@
 body {
     margin: 0;
-    font-family: 'Segoe UI', Arial, sans-serif;
-    background-color: #0f141f;
+    font-family: Arial, sans-serif;
+    font-weight: normal;
+    background: rgb(13,31,67);
+    background: linear-gradient(190deg, rgba(13,31,67,1) 0%, rgba(10,15,33,1) 50%, rgba(13,31,67,1) 100%);
     color: #fff;
     display: flex;
     flex-direction: column;
@@ -27,13 +29,13 @@ body {
     position: fixed;
     top: 20px;
     left: 20px;
-    background: transparent; /* Прозрачный фон */
+    background: transparent;
     border: none;
-    color: #7a90b0; /* Цвет стрелочки */
-    font-size: 24px; /* Размер стрелочки */
-    padding: 0; /* Убираем внутренние отступы */
-    width: 30px; /* Фиксированная ширина */
-    height: 30px; /* Фиксированная высота */
+    color: #7a90b0;
+    font-size: 24px;
+    padding: 0;
+    width: 30px;
+    height: 30px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -43,20 +45,20 @@ body {
 }
 
 .menu-button:hover {
-    color: #fff; /* Цвет при наведении */
-    transform: translateY(-2px); /* Лёгкий подъём */
+    color: #fff;
+    transform: translateY(-2px);
 }
 
 .menu-button:active {
-    transform: translateY(0); /* Возврат при нажатии */
+    transform: translateY(0);
 }
 
 .container {
-    width: 320px;
-    background: linear-gradient(180deg, #0d1119, #0f141f);
-    border-radius: 15px;
+    width: 370px;
+    background: linear-gradient(180deg, #141b2e, #141b2e 50%);
+    border-radius: 20px;
     overflow: hidden;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.8);
+    box-shadow: 0px 0px 15px 3px rgba(20,27,46, 0.1);
 }
 
 main {
@@ -64,9 +66,8 @@ main {
 }
 
 .grid-container {
-    background: #0d1119;
     padding: 10px;
-    border-radius: 10px;
+    border-radius: 15px;
     margin-bottom: 20px;
 }
 
@@ -79,29 +80,42 @@ main {
 .grid-button {
     width: 100%;
     padding-bottom: 100%;
-    background-color: #2d5a8c;
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
     cursor: default;
     position: relative;
     overflow: hidden;
     transition: transform 0.1s;
-    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
+
+}
+
+.grid-button:nth-child(odd) {
+    background: url('images/cubic_smooth.png') center/cover no-repeat;
+}
+
+.grid-button:nth-child(even) {
+    background: url('images/cubic.png') center/cover no-repeat;
 }
 
 .grid-button:hover {
     transform: translateY(1px) scale(0.99);
 }
 
+.grid-button.active {
+    background: transparent;
+}
+
 .grid-button.active::after {
-    content: '★';
+    content: '';
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 24px;
-    color: #ffd700;
-    animation: starAppear 0.5s ease-out;
+    width: 24px;
+    height: 24px;
+    background: url('images/star.png') center/contain no-repeat;
+    opacity: 0;
+    animation: starAppear 0.5s ease-out forwards;
 }
 
 .level-info {
@@ -109,12 +123,17 @@ main {
     justify-content: center;
     align-items: center;
     padding: 10px;
-    background-color: #0a0e15;
+    background-color: #141414;
     color: #7a90b0;
     font-size: 14px;
     gap: 5px;
-    border-radius: 5px;
+    border-radius: 10px;
     margin-bottom: 20px;
+}
+
+.level-info span:nth-child(2) { /* "ловушек" */
+    color: #D1E8FF; /* Brighter color for "ловушек" */
+    font-weight: 800;
 }
 
 .arrow {
@@ -134,29 +153,34 @@ main {
 #trapCount {
     font-weight: bold;
     margin: 0 10px;
+    color: #D1E8FF; /* Match the number color from the image */
 }
 
 .button-group {
     display: flex;
     justify-content: center;
     gap: 10px;
+
 }
 
 .action-button {
+    font-family: Montserrat, sans-serif;
     flex: 1;
-    padding: 12px;
-    background-color: #2d5a8c;
+    padding: 15px;
+    background: linear-gradient(90deg, #3B82F6 0%, #60A5FA 100%);
     border: none;
-    border-radius: 5px;
+    border-radius: 12px;
     color: white;
-    font-size: 16px;
+    font-size: 18px;
     cursor: pointer;
-    transition: background-color 0.3s, transform 0.1s;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.1s;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
 }
 
 .action-button:hover {
-    background-color: #244b75;
+    background: linear-gradient(90deg, #60A5FA 0%, #3B82F6 100%);
     transform: translateY(-2px);
 }
 
@@ -164,25 +188,42 @@ main {
     transform: translateY(0);
 }
 
-.reset-button {
-    padding: 12px;
-    background-color: #1a2d4d;
-    border: none;
-    border-radius: 5px;
-    color: white;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.3s, transform 0.1s;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+.action-button.disabled {
+    background: linear-gradient(90deg, #666, #444);
+    cursor: not-allowed;
+    opacity: 0.7;
 }
 
-.reset-button:hover {
-    background-color: #15233e;
-    transform: translateY(-2px);
+.action-button.disabled:hover {
+    background: linear-gradient(90deg, #444, #666);
+    transform: none;
 }
 
-.reset-button:active {
-    transform: translateY(0);
+.action-button.loading .button-text {
+    opacity: 0;
+}
+
+.action-button .loader {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to right, #3B82F6 0%, #60A5FA 50%, #3B82F6 100%);
+}
+
+.action-button.loading .loader {
+    display: block;
+    animation: loadingBar 1s ease-in-out forwards;
+}
+
+.error-message {
+    text-align: center;
+    color: #ff4444;
+    font-size: 14px;
+    margin-top: 10px;
+    display: none;
 }
 
 .input-container {
@@ -200,30 +241,52 @@ main {
 .user-input {
     width: 100%;
     padding: 12px 15px;
-    background: linear-gradient(145deg, #1a1f2b, #252b3a);
+    background: linear-gradient(145deg, #202020, #1E1E1E);
     border: none;
-    border-radius: 20px;
-    color: #7a90b0;
+    border-radius: 25px;
+    color: #C8C8C8;
     font-size: 16px;
     outline: none;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
     text-align: center;
     -webkit-text-size-adjust: 100%;
     touch-action: manipulation;
+    transition: background-color 0.5s ease-out;
 }
 
 .user-input::placeholder {
-    color: #5a6e8a;
+    color: #C8C8C8;
     text-align: center;
 }
 
 .user-input:focus {
-    background: linear-gradient(145deg, #252b3a, #1a1f2b);
-    color: #fff;
+    background: linear-gradient(145deg, #1C1C1C, #181818);
+    color: #C8C8C8;
     font-size: 16px;
 }
 
 @keyframes starAppear {
     0% { opacity: 0; transform: translate(-50%, -50%) scale(0); }
     100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+@keyframes loadingBar {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+@keyframes fall {
+    0% {
+        transform: translateY(-100vh);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(100vh);
+        opacity: 0;
+    }
+}
+
+@keyframes fadeInStars {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
 }

@@ -1,7 +1,6 @@
 // Создание падающих звёзд
 function createStars() {
     const starsContainer = document.querySelector('.stars');
-
     for (let i = 0; i < 50; i++) {
         const star = document.createElement('div');
         star.style.position = 'absolute';
@@ -39,126 +38,78 @@ styleSheet.textContent = `
 `;
 document.head.appendChild(styleSheet);
 
+// Check if watermark image loads, fallback to no watermark if it fails
+const watermarkImg = new Image();
+watermarkImg.src = 'watermark.png';
+watermarkImg.onload = () => {
+    document.body.style.backgroundImage = `url('watermark.png')`;
+};
+watermarkImg.onerror = () => {
+    console.log('Watermark image not found, skipping watermark.');
+};
+
 const coin = document.getElementById('coin');
 const signalButton = document.getElementById('signalButton');
-const resultDisplay = document.getElementById('resultDisplay');
-const roundsDisplay = document.getElementById('roundsDisplay');
-const roundsAmount = document.getElementById('roundsAmount');
-const decreaseRounds = document.getElementById('decreaseRounds');
-const increaseRounds = document.getElementById('increaseRounds');
+const eagleCard = document.getElementById('eagleCard');
+const tailCard = document.getElementById('tailCard');
 const userInput = document.getElementById('userInput');
 const menuButton = document.getElementById('menuButton');
 
 let isFlipping = false;
-let currentRounds = 1;
-let completedRounds = 0;
-let results = [];
-let currentSide = 'heads';
 
-// Обновление индикаторов раундов
-function updateRoundsDisplay() {
-    roundsDisplay.innerHTML = '';
-    for (let i = 0; i < currentRounds; i++) {
-        const indicator = document.createElement('div');
-        indicator.classList.add('round-indicator');
-        if (i < completedRounds) {
-            indicator.innerHTML = results[i] === 'heads' ? '🦅' : '₽';
-            indicator.classList.add(results[i]);
-        } else {
-            indicator.innerHTML = '?';
-        }
-        roundsDisplay.appendChild(indicator);
-    }
+// Сброс состояния карт и анимации
+function resetCards() {
+    eagleCard.classList.remove('winner', 'loser');
+    tailCard.classList.remove('winner', 'loser');
+    coin.style.animation = 'none';
+    void coin.offsetWidth;
 }
 
-// Сброс игры
-function resetGame() {
-    completedRounds = 0;
-    results = [];
-    resultDisplay.textContent = 'Готово к новому броску!';
-    signalButton.textContent = 'Получить сигнал';
-    updateRoundsDisplay();
-}
-
-// Регулировка количества раундов
-decreaseRounds.addEventListener('click', () => {
-    if (currentRounds > 1 && !isFlipping) {
-        currentRounds--;
-        roundsAmount.textContent = currentRounds;
-        if (completedRounds > currentRounds) resetGame();
-        updateRoundsDisplay();
-    }
-});
-
-increaseRounds.addEventListener('click', () => {
-    if (currentRounds < 10 && !isFlipping) {
-        currentRounds++;
-        roundsAmount.textContent = currentRounds;
-        updateRoundsDisplay();
-    }
-});
-
-// Получение сигнала и подбрасывание монетки
 signalButton.addEventListener('click', () => {
     const userInputValue = userInput.value.trim();
 
     if (!userInputValue) {
-        resultDisplay.textContent = 'Ошибка: Поле ввода не может быть пустым!';
-        resultDisplay.classList.add('error');
         return;
-    } else {
-        resultDisplay.classList.remove('error');
     }
 
     if (isFlipping) return;
 
-    if (completedRounds >= currentRounds) {
-        resetGame();
-        return;
+    isFlipping = true;
+    signalButton.disabled = true;
+    resetCards();
+
+    const result = Math.random() < 0.5 ? 'heads' : 'tails';
+    if (result === 'heads') {
+        coin.style.animation = 'coinSpinHeads 3s ease-in-out forwards';
+    } else {
+        coin.style.animation = 'coinSpinTails 3s ease-in-out forwards';
     }
 
-    isFlipping = true;
-    coin.classList.add('signal');
-    resultDisplay.textContent = 'Получение сигнала...';
-    signalButton.disabled = true;
-
     setTimeout(() => {
-        coin.classList.remove('signal');
+        if (result === 'heads') {
+            eagleCard.classList.add('winner');
+            tailCard.classList.add('loser');
+            console.log('Result: heads (Орёл), Coin Face: coineagle.png');
+        } else {
+            tailCard.classList.add('winner');
+            eagleCard.classList.add('loser');
+            console.log('Result: tails (Решка), Coin Face: cointail.png');
+        }
 
-        const result = Math.random() < 0.5 ? 'heads' : 'tails';
-        coin.classList.add(`result-${result}`);
-        results[completedRounds] = result;
-
-        setTimeout(() => {
-            coin.style.transform = result === 'heads' ? 'rotateY(0deg)' : 'rotateY(180deg)';
-            currentSide = result;
-            resultDisplay.textContent = result === 'heads' ? 'Выпал Орёл' : 'Выпала Решка';
-            coin.classList.remove(`result-${result}`);
-            completedRounds++;
-            updateRoundsDisplay();
-
-            if (completedRounds >= currentRounds) {
-                signalButton.textContent = 'Подбросить заново';
-            }
-
-            isFlipping = false;
-            signalButton.disabled = false;
-        }, 2500);
-    }, 1500);
+        isFlipping = false;
+        signalButton.disabled = false;
+    }, 3000);
 });
 
-// Переход на menu.html
 menuButton.addEventListener('click', () => {
     window.location.href = 'menu.html';
 });
 
-// Telegram Web App
 if (window.Telegram) {
     Telegram.WebApp.ready();
     Telegram.WebApp.expand();
 }
 
-// Сохранение значения поля ввода в localStorage
 const savedValue = localStorage.getItem('userInputValue');
 if (savedValue) {
     userInput.value = savedValue;
@@ -168,26 +119,13 @@ userInput.addEventListener('input', () => {
     localStorage.setItem('userInputValue', userInput.value);
 });
 
-// Блокировка масштабирования
-document.addEventListener('gesturestart', function (e) {
-    e.preventDefault();
-}, { passive: false });
-
-document.addEventListener('gesturechange', function (e) {
-    e.preventDefault();
-}, { passive: false });
-
-document.addEventListener('gestureend', function (e) {
-    e.preventDefault();
-}, { passive: false });
-
-document.addEventListener('touchmove', function (e) {
-    if (e.touches.length > 1) {
-        e.preventDefault();
-    }
+document.addEventListener('gesturestart', (e) => e.preventDefault(), { passive: false });
+document.addEventListener('gesturechange', (e) => e.preventDefault(), { passive: false });
+document.addEventListener('gestureend', (e) => e.preventDefault(), { passive: false });
+document.addEventListener('touchmove', (e) => {
+    if (e.touches.length > 1) e.preventDefault();
 }, { passive: false });
 
 window.addEventListener('load', () => {
     createStars();
-    updateRoundsDisplay();
 });
