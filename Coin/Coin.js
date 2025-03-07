@@ -27,24 +27,30 @@ document.addEventListener('DOMContentLoaded', () => {
     const signalButton = document.getElementById('signalButton');
     const eagleCard = document.getElementById('eagleCard');
     const tailCard = document.getElementById('tailCard');
-    const userInput = document.getElementById('userInput');
     const menuButton = document.getElementById('menuButton');
     const errorMessage = document.getElementById('errorMessage');
+    const modal = document.getElementById('inputModal');
+    const modalInput = document.getElementById('modalUserInput');
+    const modalSubmit = document.getElementById('modalSubmit');
+    const modalError = document.getElementById('modalError');
     let isFlipping = false;
+    let userText = '';
+    let hasFlipped = false;
 
-    // Проверка ввода пользователя
-    function checkInput() {
-        const inputValue = userInput.value.trim();
+    // Показать модальное окно при загрузке
+    modal.classList.add('active');
+    signalButton.classList.add('disabled');
+
+    // Проверка ввода в модальном окне
+    function checkModalInput() {
+        const inputValue = modalInput.value.trim();
         if (!inputValue) {
-            signalButton.classList.add('disabled');
-            errorMessage.textContent = 'Введите текст для продолжения!';
-            errorMessage.style.display = 'block';
+            modalError.textContent = 'Введите текст для продолжения!';
+            modalError.style.display = 'block';
             return false;
-        } else {
-            signalButton.classList.remove('disabled');
-            errorMessage.style.display = 'none';
-            return true;
         }
+        modalError.style.display = 'none';
+        return true;
     }
 
     // Сброс состояния карт и анимации
@@ -55,10 +61,30 @@ document.addEventListener('DOMContentLoaded', () => {
         void coin.offsetWidth;
     }
 
+    // Обработка подтверждения в модальном окне
+    modalSubmit.addEventListener('click', () => {
+        if (checkModalInput()) {
+            userText = modalInput.value.trim();
+            modal.classList.remove('active');
+            signalButton.classList.remove('disabled');
+            if (hasFlipped) {
+                hasFlipped = false; // Сбрасываем флаг после повторного ввода
+            }
+        }
+    });
+
+    modalInput.addEventListener('input', checkModalInput);
+
     signalButton.addEventListener('click', () => {
         if (isFlipping || signalButton.classList.contains('disabled')) return;
 
-        if (!checkInput()) return;
+        // Если монетка уже была подкинута, показываем модальное окно
+        if (hasFlipped) {
+            modalInput.value = '';
+            modal.classList.add('active');
+            signalButton.classList.add('disabled');
+            return;
+        }
 
         isFlipping = true;
         signalButton.classList.add('loading');
@@ -83,6 +109,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log('Result: tails (Решка), Coin Face: cointail.png');
             }
             isFlipping = false;
+            hasFlipped = true;
+            userText = ''; // Очищаем текст после броска
         }, 3000);
     });
 
@@ -90,19 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = 'menu.html';
     });
 
-    userInput.addEventListener('input', () => {
-        checkInput();
-        localStorage.setItem('userInputValue', userInput.value);
-    });
-
-    const savedValue = localStorage.getItem('userInputValue');
-    if (savedValue) {
-        userInput.value = savedValue;
-        checkInput();
-    } else {
-        checkInput();
-    }
-
+    // Предотвращение масштабирования
     document.addEventListener('gesturestart', (e) => e.preventDefault(), { passive: false });
     document.addEventListener('gesturechange', (e) => e.preventDefault(), { passive: false });
     document.addEventListener('gestureend', (e) => e.preventDefault(), { passive: false });
@@ -112,17 +128,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     createStars();
 
-
     // Telegram Web App initialization
     if (window.Telegram) {
         Telegram.WebApp.ready();
         Telegram.WebApp.expand();
-        console.log(Telegram.WebApp.viewportHeight); // Высота области
-        console.log(window.innerWidth); // Ширина области
+        console.log(Telegram.WebApp.viewportHeight);
+        console.log(window.innerWidth);
     }
 });
 
-// Check if watermark image loads, fallback to no watermark if it fails
+// Watermark
 const watermarkImg = new Image();
 watermarkImg.src = 'watermark.png';
 watermarkImg.onload = () => {
