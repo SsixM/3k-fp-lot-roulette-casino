@@ -112,10 +112,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     createStars();
 
+
     // Telegram Web App initialization
     if (window.Telegram) {
         Telegram.WebApp.ready();
         Telegram.WebApp.expand();
+        console.log(Telegram.WebApp.viewportHeight); // Высота области
+        console.log(window.innerWidth); // Ширина области
     }
 });
 

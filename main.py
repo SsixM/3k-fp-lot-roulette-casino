@@ -14,7 +14,7 @@ def send_welcome(message):
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     web_app_button = types.KeyboardButton(
         text="Открыть мини-приложение",
-        web_app=types.WebAppInfo(url="https://coinmced.beget.tech/")
+        web_app=types.WebAppInfo(url="https://devastcheats.github.io/3k-fp-lot-roulette-casino/menu.html")
     )
     keyboard.add(web_app_button)
 
