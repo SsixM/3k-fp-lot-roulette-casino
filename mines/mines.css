@@ -111,8 +111,8 @@ main {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 36px; /* Увеличено с 24px до 48px */
-    height: 36px; /* Увеличено с 24px до 48px */
+    width: 36px;
+    height: 36px;
     background: url('images/star.png') center/contain no-repeat;
     opacity: 0;
     animation: starAppear 0.5s ease-out forwards;
@@ -225,20 +225,41 @@ main {
     display: none;
 }
 
-.input-container {
+.modal {
+    display: none;
     position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 90%;
-    max-width: 320px;
-    display: flex;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
     justify-content: center;
-    z-index: 2;
+    align-items: center;
 }
 
-.user-input {
-    width: 100%;
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background: linear-gradient(180deg, #141b2e, #141b2e 50%);
+    padding: 20px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 300px;
+    text-align: center;
+    box-shadow: 0px 0px 15px 3px rgba(20,27,46, 0.1);
+}
+
+.modal-content h2 {
+    color: #fff;
+    margin: 0 0 15px 0;
+    font-size: 20px;
+}
+
+.modal-input {
+    width: calc(100% - 30px); /* Учитываем padding 15px с каждой стороны */
     padding: 12px 15px;
     background: linear-gradient(145deg, #202020, #1E1E1E);
     border: none;
@@ -247,21 +268,45 @@ main {
     font-size: 16px;
     outline: none;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+    margin-bottom: 15px;
     text-align: center;
-    -webkit-text-size-adjust: 100%;
-    touch-action: manipulation;
-    transition: background-color 0.5s ease-out;
+    box-sizing: border-box;
 }
 
-.user-input::placeholder {
+.modal-input::placeholder {
     color: #C8C8C8;
-    text-align: center;
 }
 
-.user-input:focus {
+.modal-input:focus {
     background: linear-gradient(145deg, #1C1C1C, #181818);
-    color: #C8C8C8;
+}
+
+.modal-button {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(90deg, #3B82F6 0%, #60A5FA 100%);
+    border: none;
+    border-radius: 12px;
+    color: white;
     font-size: 16px;
+    cursor: pointer;
+    transition: transform 0.1s;
+}
+
+.modal-button:hover {
+    background: linear-gradient(90deg, #60A5FA 0%, #3B82F6 100%);
+    transform: translateY(-2px);
+}
+
+.modal-button:active {
+    transform: translateY(0);
+}
+
+.modal-error {
+    color: #ff4444;
+    font-size: 14px;
+    margin-top: 10px;
+    display: none;
 }
 
 @keyframes starAppear {

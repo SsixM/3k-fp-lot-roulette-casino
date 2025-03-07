@@ -28,11 +28,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const decreaseButton = document.getElementById('decrease');
     const increaseButton = document.getElementById('increase');
     const mineButton = document.getElementById('mineButton');
-    const userInput = document.getElementById('userInput');
     const menuButton = document.getElementById('menuButton');
     const errorMessage = document.getElementById('errorMessage');
+    const modal = document.getElementById('inputModal');
+    const modalInput = document.getElementById('modalUserInput');
+    const modalSubmit = document.getElementById('modalSubmit');
+    const modalError = document.getElementById('modalError');
     let trapCount = 1; // Число ловушек, выбираемых стрелочками
     const allowedTraps = [1, 3, 5, 7];
+    let isLoading = false;
+    let userText = '';
+    let hasPlayed = false;
+
+    // Показать модальное окно при загрузке
+    modal.classList.add('active');
+    mineButton.classList.add('disabled');
 
     function updateGrid() {
         grid.innerHTML = '';
@@ -43,18 +53,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function checkInput() {
-        const inputValue = userInput.value.trim();
+    // Проверка ввода в модальном окне
+    function checkModalInput() {
+        const inputValue = modalInput.value.trim();
         if (!inputValue) {
-            mineButton.classList.add('disabled');
-            errorMessage.textContent = 'Введите текст для продолжения!';
-            errorMessage.style.display = 'block';
+            modalError.textContent = 'Введите текст для продолжения!';
+            modalError.style.display = 'block';
             return false;
-        } else {
-            mineButton.classList.remove('disabled');
-            errorMessage.style.display = 'none';
-            return true;
         }
+        modalError.style.display = 'none';
+        return true;
     }
 
     // Функция для получения количества звезд в полях в зависимости от trapCount
@@ -84,20 +92,41 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Обработка подтверждения в модальном окне
+    modalSubmit.addEventListener('click', () => {
+        if (checkModalInput()) {
+            userText = modalInput.value.trim();
+            modal.classList.remove('active');
+            mineButton.classList.remove('disabled');
+            if (hasPlayed) {
+                hasPlayed = false; // Сбрасываем флаг после повторного ввода
+            }
+        }
+    });
+
+    modalInput.addEventListener('input', checkModalInput);
+
     mineButton.addEventListener('click', () => {
-        if (mineButton.classList.contains('loading') || mineButton.classList.contains('disabled')) return;
+        if (isLoading || mineButton.classList.contains('disabled')) return;
 
-        if (!checkInput()) return;
+        // Если игра уже была сыграна, показываем модальное окно
+        if (hasPlayed) {
+            modalInput.value = '';
+            modal.classList.add('active');
+            mineButton.classList.add('disabled');
+            return;
+        }
 
+        isLoading = true;
         mineButton.classList.add('loading');
         const buttons = grid.getElementsByClassName('grid-button');
         for (let button of buttons) {
             button.classList.remove('active');
         }
 
-        const starCount = getStarCount(trapCount); // Получаем нужное количество звезд
+        const starCount = getStarCount(trapCount);
         const trapIndices = new Set();
-        while (trapIndices.size < starCount) { // Используем starCount вместо trapCount
+        while (trapIndices.size < starCount) {
             const randomIndex = Math.floor(Math.random() * buttons.length);
             trapIndices.add(randomIndex);
         }
@@ -109,32 +138,21 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 buttons[index].classList.add('active');
                 if (i === trapArray.length - 1) {
-                    mineButton.classList.remove('loading'); // Убираем loading после последней звезды
+                    mineButton.classList.remove('loading');
+                    isLoading = false;
+                    hasPlayed = true;
+                    userText = ''; // Очищаем текст после игры
                 }
             }, delay);
-            delay += 300; // Задержка 300 мс между звездами
+            delay += 300;
         });
 
-        // Обновляем фоновые звезды (оставляем как было, если не нужно менять)
-        createStars(6); // Можно оставить фиксированное число фоновых звезд, например, 6
-    });
-
-    userInput.addEventListener('input', () => {
-        checkInput();
-        localStorage.setItem('userInputValue', userInput.value);
+        createStars(6); // Обновляем фоновые звезды
     });
 
     menuButton.addEventListener('click', () => {
-        window.location.href = 'file:///C:/Users/slava/OneDrive/Документы/GitHub/DevLegacy/3k-fp-lot-roulette-casino/menu.html';
+        window.location.href = 'menu.html'; // Исправьте путь на корректный
     });
-
-    const savedValue = localStorage.getItem('userInputValue');
-    if (savedValue) {
-        userInput.value = savedValue;
-        checkInput();
-    } else {
-        checkInput();
-    }
 
     document.addEventListener('gesturestart', function (e) {
         e.preventDefault();

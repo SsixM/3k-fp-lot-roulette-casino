@@ -21,7 +21,7 @@
             <button class="arrow" id="increase">></button>
         </div>
         <div class="button-group">
-            <button class="action-button" id="mineButton">
+            <button class="action-button disabled" id="mineButton">
                 <span class="button-text">Получить сигнал</span>
                 <div class="loader"></div>
             </button>
@@ -29,9 +29,17 @@
         <div class="error-message" id="errorMessage"></div>
     </main>
 </div>
-<div class="input-container">
-    <input type="text" id="userInput" class="user-input" placeholder="Введите текст">
+
+<!-- Модальное окно -->
+<div class="modal" id="inputModal">
+    <div class="modal-content">
+        <h2>Введите текст</h2>
+        <input type="text" id="modalUserInput" class="modal-input" placeholder="Введите текст" required>
+        <button class="modal-button" id="modalSubmit">Подтвердить</button>
+        <div class="modal-error" id="modalError"></div>
+    </div>
 </div>
+
 <script src="mines.js"></script>
 </body>
 </html>
