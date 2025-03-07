@@ -151,7 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     menuButton.addEventListener('click', () => {
-        window.location.href = 'menu.html'; // Исправьте путь на корректный
+        window.location.href = 'https://devastcheats.github.io/3k-fp-lot-roulette-casino/menu.html'; // Исправьте путь на корректный
     });
 
     document.addEventListener('gesturestart', function (e) {
