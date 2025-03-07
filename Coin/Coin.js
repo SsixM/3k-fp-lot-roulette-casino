@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     menuButton.addEventListener('click', () => {
-        window.location.href = 'https://devastcheats.github.io/3k-fp-lot-roulette-casino/menu.html';
+        window.location.href = 'https://devastcheats.github.io/3k-fp-lot-roulette-casino/';
     });
 
     // Предотвращение масштабирования
