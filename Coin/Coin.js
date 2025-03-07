@@ -22,21 +22,102 @@ function createStars() {
     }
 }
 
-// Добавление стилей анимации
-const styleSheet = document.createElement('style');
-styleSheet.textContent = `
-    @keyframes fall {
-        0% {
-            transform: translateY(-100vh);
-            opacity: 1;
-        }
-        100% {
-            transform: translateY(100vh);
-            opacity: 0;
+document.addEventListener('DOMContentLoaded', () => {
+    const coin = document.getElementById('coin');
+    const signalButton = document.getElementById('signalButton');
+    const eagleCard = document.getElementById('eagleCard');
+    const tailCard = document.getElementById('tailCard');
+    const userInput = document.getElementById('userInput');
+    const menuButton = document.getElementById('menuButton');
+    const errorMessage = document.getElementById('errorMessage');
+    let isFlipping = false;
+
+    // Проверка ввода пользователя
+    function checkInput() {
+        const inputValue = userInput.value.trim();
+        if (!inputValue) {
+            signalButton.classList.add('disabled');
+            errorMessage.textContent = 'Введите текст для продолжения!';
+            errorMessage.style.display = 'block';
+            return false;
+        } else {
+            signalButton.classList.remove('disabled');
+            errorMessage.style.display = 'none';
+            return true;
         }
     }
-`;
-document.head.appendChild(styleSheet);
+
+    // Сброс состояния карт и анимации
+    function resetCards() {
+        eagleCard.classList.remove('winner', 'loser');
+        tailCard.classList.remove('winner', 'loser');
+        coin.style.animation = 'none';
+        void coin.offsetWidth;
+    }
+
+    signalButton.addEventListener('click', () => {
+        if (isFlipping || signalButton.classList.contains('disabled')) return;
+
+        if (!checkInput()) return;
+
+        isFlipping = true;
+        signalButton.classList.add('loading');
+        resetCards();
+
+        const result = Math.random() < 0.5 ? 'heads' : 'tails';
+        if (result === 'heads') {
+            coin.style.animation = 'coinSpinHeads 3s ease-in-out forwards';
+        } else {
+            coin.style.animation = 'coinSpinTails 3s ease-in-out forwards';
+        }
+
+        setTimeout(() => {
+            signalButton.classList.remove('loading');
+            if (result === 'heads') {
+                eagleCard.classList.add('winner');
+                tailCard.classList.add('loser');
+                console.log('Result: heads (Орёл), Coin Face: coineagle.png');
+            } else {
+                tailCard.classList.add('winner');
+                eagleCard.classList.add('loser');
+                console.log('Result: tails (Решка), Coin Face: cointail.png');
+            }
+            isFlipping = false;
+        }, 3000);
+    });
+
+    menuButton.addEventListener('click', () => {
+        window.location.href = 'menu.html';
+    });
+
+    userInput.addEventListener('input', () => {
+        checkInput();
+        localStorage.setItem('userInputValue', userInput.value);
+    });
+
+    const savedValue = localStorage.getItem('userInputValue');
+    if (savedValue) {
+        userInput.value = savedValue;
+        checkInput();
+    } else {
+        checkInput();
+    }
+
+    document.addEventListener('gesturestart', (e) => e.preventDefault(), { passive: false });
+    document.addEventListener('gesturechange', (e) => e.preventDefault(), { passive: false });
+    document.addEventListener('gestureend', (e) => e.preventDefault(), { passive: false });
+    document.addEventListener('touchmove', (e) => {
+        if (e.touches.length > 1) e.preventDefault();
+    }, { passive: false });
+
+    createStars();
+
+    // Telegram Web App initialization
+    if (window.Telegram) {
+        Telegram.WebApp.ready();
+        Telegram.WebApp.expand();
+    }
+});
 
 // Check if watermark image loads, fallback to no watermark if it fails
 const watermarkImg = new Image();
@@ -47,85 +128,3 @@ watermarkImg.onload = () => {
 watermarkImg.onerror = () => {
     console.log('Watermark image not found, skipping watermark.');
 };
-
-const coin = document.getElementById('coin');
-const signalButton = document.getElementById('signalButton');
-const eagleCard = document.getElementById('eagleCard');
-const tailCard = document.getElementById('tailCard');
-const userInput = document.getElementById('userInput');
-const menuButton = document.getElementById('menuButton');
-
-let isFlipping = false;
-
-// Сброс состояния карт и анимации
-function resetCards() {
-    eagleCard.classList.remove('winner', 'loser');
-    tailCard.classList.remove('winner', 'loser');
-    coin.style.animation = 'none';
-    void coin.offsetWidth;
-}
-
-signalButton.addEventListener('click', () => {
-    const userInputValue = userInput.value.trim();
-
-    if (!userInputValue) {
-        return;
-    }
-
-    if (isFlipping) return;
-
-    isFlipping = true;
-    signalButton.disabled = true;
-    resetCards();
-
-    const result = Math.random() < 0.5 ? 'heads' : 'tails';
-    if (result === 'heads') {
-        coin.style.animation = 'coinSpinHeads 3s ease-in-out forwards';
-    } else {
-        coin.style.animation = 'coinSpinTails 3s ease-in-out forwards';
-    }
-
-    setTimeout(() => {
-        if (result === 'heads') {
-            eagleCard.classList.add('winner');
-            tailCard.classList.add('loser');
-            console.log('Result: heads (Орёл), Coin Face: coineagle.png');
-        } else {
-            tailCard.classList.add('winner');
-            eagleCard.classList.add('loser');
-            console.log('Result: tails (Решка), Coin Face: cointail.png');
-        }
-
-        isFlipping = false;
-        signalButton.disabled = false;
-    }, 3000);
-});
-
-menuButton.addEventListener('click', () => {
-    window.location.href = 'menu.html';
-});
-
-if (window.Telegram) {
-    Telegram.WebApp.ready();
-    Telegram.WebApp.expand();
-}
-
-const savedValue = localStorage.getItem('userInputValue');
-if (savedValue) {
-    userInput.value = savedValue;
-}
-
-userInput.addEventListener('input', () => {
-    localStorage.setItem('userInputValue', userInput.value);
-});
-
-document.addEventListener('gesturestart', (e) => e.preventDefault(), { passive: false });
-document.addEventListener('gesturechange', (e) => e.preventDefault(), { passive: false });
-document.addEventListener('gestureend', (e) => e.preventDefault(), { passive: false });
-document.addEventListener('touchmove', (e) => {
-    if (e.touches.length > 1) e.preventDefault();
-}, { passive: false });
-
-window.addEventListener('load', () => {
-    createStars();
-});
