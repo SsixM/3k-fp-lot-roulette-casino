@@ -7,47 +7,47 @@
     <link rel="stylesheet" href="Coin.css">
 </head>
 <body>
-    <div class="stars"></div>
-    <button class="menu-button" id="menuButton">←</button>
-    <div class="container">
-        <div class="coin-container">
-            <div class="coin" id="coin">
-                <img src="images/coineagle.png" alt="Eagle" class="coin-face">
-                <img src="images/cointail.png" alt="Tail" class="coin-face">
-            </div>
-        </div>
-        <div class="result-cards">
-            <div class="result-card" id="eagleCard">
-                <span class="card-text">Орёл</span>
-                <img src="images/coineagle.png" alt="Eagle" class="card-icon">
-            </div>
-            <div class="result-card" id="tailCard">
-                <img src="images/cointail.png" alt="Tail" class="card-icon">
-                <span class="card-text">Решка</span>
-            </div>
-        </div>
-        <button class="signal-button disabled" id="signalButton">
-            <span class="button-text">Получить сигнал</span>
-            <div class="loader"></div>
-        </button>
-        <div class="error-message" id="errorMessage"></div>
-    </div>
-
-    <!-- Модальное окно -->
-    <div class="modal" id="inputModal">
-        <div class="modal-content">
-            <h2>URL-страница 1WIN</h2>
-            <input type="text" id="modalUserInput" class="modal-input" placeholder="Введите ссылку" required>
-            <button class="modal-button" id="modalSubmit">Подтвердить</button>
-            <div class="modal-error" id="modalError"></div>
+<div class="stars"></div>
+<button class="menu-button" id="menuButton">←</button>
+<div class="container">
+    <div class="coin-container">
+        <div class="coin" id="coin">
+            <img src="images/coineagle.png" alt="Eagle" class="coin-face">
+            <img src="images/cointail.png" alt="Tail" class="coin-face">
         </div>
     </div>
+    <div class="result-cards">
+        <div class="result-card" id="eagleCard">
+            <span class="card-text">Орёл</span>
+            <img src="images/coineagle.png" alt="Eagle" class="card-icon">
+        </div>
+        <div class="result-card" id="tailCard">
+            <img src="images/cointail.png" alt="Tail" class="card-icon">
+            <span class="card-text">Решка</span>
+        </div>
+    </div>
+    <button class="signal-button disabled" id="signalButton">
+        <span class="button-text">Получить сигнал</span>
+        <div class="loader"></div>
+    </button>
+    <div class="error-message" id="errorMessage"></div>
+</div>
 
-    <!-- Added image at the bottom -->
-    <img src="images/ico.png" alt="Bottom Image" class="bottom-image">
+<!-- Модальное окно -->
+<div class="modal" id="inputModal">
+    <div class="modal-content">
+        <h2>URL-страница 1WIN</h2>
+        <input type="text" id="modalUserInput" class="modal-input" placeholder="Введите ссылку" required>
+        <button class="modal-button" id="modalSubmit">Подтвердить</button>
+        <div class="modal-error" id="modalError"></div>
+    </div>
+</div>
 
-    <script src="Coin.js"></script>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'91cd25f7387d53d2',t:'MTc0MTM4MjU0Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+<!-- Added image at the bottom -->
+<img src="images/ico.png" alt="Bottom Image" class="bottom-image">
+
+<script src="Coin.js"></script>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'91cd25f7387d53d2',t:'MTc0MTM4MjU0Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>

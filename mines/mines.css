@@ -7,7 +7,7 @@ body {
     color: #fff;
     display: flex;
     flex-direction: column;
-    justify-content: center; /* Centers the container vertically */
+    justify-content: center;
     align-items: center;
     min-height: 100vh;
     overflow-x: hidden;
@@ -28,15 +28,15 @@ body {
 
 .menu-button {
     position: fixed;
-    top: 20px;
-    left: 20px;
+    top: 10px;
+    left: 10px;
     background: transparent;
     border: none;
     color: #7a90b0;
-    font-size: 24px;
+    font-size: 20px;
     padding: 0;
-    width: 30px;
-    height: 30px;
+    width: 25px;
+    height: 25px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -55,38 +55,39 @@ body {
 }
 
 .container {
-    width: 370px;
+    width: 100%;
+    max-width: 370px;
     background: linear-gradient(180deg, #141b2e, #141b2e 50%);
     border-radius: 20px;
     overflow: hidden;
     box-shadow: 0px 0px 15px 3px rgba(20,27,46, 0.1);
     position: relative;
-    margin-top: -50px; /* Adjust this value to move it higher (negative moves up) */
+    margin: 20px 0; /* Adjusted for vertical spacing */
 }
 
 main {
-    padding: 20px;
+    padding: 15px;
     position: relative;
-    z-index: 2; /* Ensure it stays above the bottom image */
+    z-index: 2;
 }
 
 .grid-container {
-    padding: 10px;
+    padding: 8px;
     border-radius: 15px;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 
 .grid {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: 5px;
+    gap: 4px;
 }
 
 .grid-button {
     width: 100%;
     padding-bottom: 100%;
     border: none;
-    border-radius: 8px;
+    border-radius: 6px;
     cursor: default;
     position: relative;
     overflow: hidden;
@@ -115,8 +116,8 @@ main {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 36px;
-    height: 36px;
+    width: 30px;
+    height: 30px;
     background: url('images/star.png') center/contain no-repeat;
     opacity: 0;
     animation: starAppear 0.5s ease-out forwards;
@@ -126,13 +127,13 @@ main {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 10px;
+    padding: 8px;
     background-color: #141414;
     color: #7a90b0;
-    font-size: 14px;
-    gap: 5px;
-    border-radius: 10px;
-    margin-bottom: 20px;
+    font-size: 12px;
+    gap: 4px;
+    border-radius: 8px;
+    margin-bottom: 15px;
 }
 
 .level-info span:nth-child(2) {
@@ -144,9 +145,9 @@ main {
     background: none;
     border: none;
     color: #7a90b0;
-    font-size: 16px;
+    font-size: 14px;
     cursor: pointer;
-    padding: 0 5px;
+    padding: 0 4px;
     transition: color 0.3s;
 }
 
@@ -156,25 +157,25 @@ main {
 
 #trapCount {
     font-weight: bold;
-    margin: 0 10px;
+    margin: 0 8px;
     color: #D1E8FF;
 }
 
 .button-group {
     display: flex;
     justify-content: center;
-    gap: 10px;
+    gap: 8px;
 }
 
 .action-button {
     font-family: Montserrat, sans-serif;
     flex: 1;
-    padding: 15px;
+    padding: 12px;
     background: linear-gradient(90deg, #3B82F6 0%, #60A5FA 100%);
     border: none;
-    border-radius: 12px;
+    border-radius: 10px;
     color: white;
-    font-size: 18px;
+    font-size: 16px;
     cursor: pointer;
     position: relative;
     overflow: hidden;
@@ -224,8 +225,8 @@ main {
 .error-message {
     text-align: center;
     color: #ff4444;
-    font-size: 14px;
-    margin-top: 10px;
+    font-size: 12px;
+    margin-top: 8px;
     display: none;
 }
 
@@ -248,31 +249,31 @@ main {
 
 .modal-content {
     background: linear-gradient(180deg, #141b2e, #141b2e 50%);
-    padding: 20px;
-    border-radius: 15px;
+    padding: 15px;
+    border-radius: 12px;
     width: 90%;
-    max-width: 300px;
+    max-width: 280px;
     text-align: center;
     box-shadow: 0px 0px 15px 3px rgba(20,27,46, 0.1);
 }
 
 .modal-content h2 {
     color: #fff;
-    margin: 0 0 15px 0;
-    font-size: 20px;
+    margin: 0 0 12px 0;
+    font-size: 18px;
 }
 
 .modal-input {
-    width: calc(100% - 30px); /* Учитываем padding 15px с каждой стороны */
-    padding: 12px 15px;
+    width: calc(100% - 24px);
+    padding: 10px 12px;
     background: linear-gradient(145deg, #202020, #1E1E1E);
     border: none;
-    border-radius: 25px;
+    border-radius: 20px;
     color: #C8C8C8;
-    font-size: 16px;
+    font-size: 14px;
     outline: none;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
-    margin-bottom: 15px;
+    margin-bottom: 12px;
     text-align: center;
     box-sizing: border-box;
 }
@@ -287,12 +288,12 @@ main {
 
 .modal-button {
     width: 100%;
-    padding: 12px;
+    padding: 10px;
     background: linear-gradient(90deg, #3B82F6 0%, #60A5FA 100%);
     border: none;
-    border-radius: 12px;
+    border-radius: 10px;
     color: white;
-    font-size: 16px;
+    font-size: 14px;
     cursor: pointer;
     transition: transform 0.1s;
 }
@@ -308,21 +309,21 @@ main {
 
 .modal-error {
     color: #ff4444;
-    font-size: 14px;
-    margin-top: 10px;
+    font-size: 12px;
+    margin-top: 8px;
     display: none;
 }
 
 .bottom-image {
     position: absolute;
-    bottom: 20px; /* Distance from the bottom */
+    bottom: 15px;
     left: 50%;
-    transform: translateX(-50%); /* Center the image horizontally */
-    width: 200px; /* Adjust width as needed */
-    height: auto; /* Maintain aspect ratio */
-    border-radius: 15px; /* Rounded corners */
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5); /* Optional shadow for effect */
-    z-index: 1; /* Ensure it stays above other elements if needed */
+    transform: translateX(-50%);
+    width: 150px;
+    height: auto;
+    border-radius: 15px;
+    box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.15);
+    z-index: 1;
 }
 
 @keyframes starAppear {
@@ -336,17 +337,86 @@ main {
 }
 
 @keyframes fall {
-    0% {
-        transform: translateY(-100vh);
-        opacity: 1;
-    }
-    100% {
-        transform: translateY(100vh);
-        opacity: 0;
-    }
+    0% { transform: translateY(-100vh); opacity: 1; }
+    100% { transform: translateY(100vh); opacity: 0; }
 }
 
 @keyframes fadeInStars {
     0% { opacity: 0; }
     100% { opacity: 1; }
+}
+
+/* Media Query for 382x589 resolution */
+@media (max-width: 400px) and (max-height: 700px) {
+    .container {
+        max-width: 350px;
+        margin: 10px 0;
+    }
+
+    main {
+        padding: 10px;
+    }
+
+    .grid-container {
+        padding: 6px;
+        margin-bottom: 10px;
+    }
+
+    .grid {
+        gap: 3px;
+    }
+
+    .grid-button {
+        border-radius: 5px;
+    }
+
+    .grid-button.active::after {
+        width: 25px;
+        height: 25px;
+    }
+
+    .level-info {
+        padding: 6px;
+        font-size: 11px;
+        margin-bottom: 10px;
+    }
+
+    .arrow {
+        font-size: 12px;
+        padding: 0 3px;
+    }
+
+    #trapCount {
+        margin: 0 6px;
+    }
+
+    .action-button {
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    .bottom-image {
+        width: 120px;
+        bottom: 10px;
+    }
+
+    .modal-content {
+        padding: 12px;
+        max-width: 250px;
+    }
+
+    .modal-content h2 {
+        font-size: 16px;
+        margin-bottom: 10px;
+    }
+
+    .modal-input {
+        padding: 8px 10px;
+        font-size: 13px;
+    }
+
+    .modal-button {
+        padding: 8px;
+        font-size: 13px;
+    }
 }
