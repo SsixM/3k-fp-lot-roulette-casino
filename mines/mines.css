@@ -7,7 +7,7 @@ body {
     color: #fff;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: center; /* Centers the container vertically */
     align-items: center;
     min-height: 100vh;
     overflow-x: hidden;
@@ -60,10 +60,14 @@ body {
     border-radius: 20px;
     overflow: hidden;
     box-shadow: 0px 0px 15px 3px rgba(20,27,46, 0.1);
+    position: relative;
+    margin-top: -50px; /* Adjust this value to move it higher (negative moves up) */
 }
 
 main {
     padding: 20px;
+    position: relative;
+    z-index: 2; /* Ensure it stays above the bottom image */
 }
 
 .grid-container {
@@ -307,6 +311,18 @@ main {
     font-size: 14px;
     margin-top: 10px;
     display: none;
+}
+
+.bottom-image {
+    position: absolute;
+    bottom: 20px; /* Distance from the bottom */
+    left: 50%;
+    transform: translateX(-50%); /* Center the image horizontally */
+    width: 200px; /* Adjust width as needed */
+    height: auto; /* Maintain aspect ratio */
+    border-radius: 15px; /* Rounded corners */
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5); /* Optional shadow for effect */
+    z-index: 1; /* Ensure it stays above other elements if needed */
 }
 
 @keyframes starAppear {
