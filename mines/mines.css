@@ -23,6 +23,7 @@ body {
     width: 100%;
     height: 100%;
     pointer-events: none;
+    overflow: hidden;
 }
 
 .menu-button {
@@ -86,7 +87,6 @@ main {
     position: relative;
     overflow: hidden;
     transition: transform 0.1s;
-
 }
 
 .grid-button:nth-child(odd) {
@@ -111,8 +111,8 @@ main {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 24px;
-    height: 24px;
+    width: 36px; /* Увеличено с 24px до 48px */
+    height: 36px; /* Увеличено с 24px до 48px */
     background: url('images/star.png') center/contain no-repeat;
     opacity: 0;
     animation: starAppear 0.5s ease-out forwards;
@@ -131,8 +131,8 @@ main {
     margin-bottom: 20px;
 }
 
-.level-info span:nth-child(2) { /* "ловушек" */
-    color: #D1E8FF; /* Brighter color for "ловушек" */
+.level-info span:nth-child(2) {
+    color: #D1E8FF;
     font-weight: 800;
 }
 
@@ -153,14 +153,13 @@ main {
 #trapCount {
     font-weight: bold;
     margin: 0 10px;
-    color: #D1E8FF; /* Match the number color from the image */
+    color: #D1E8FF;
 }
 
 .button-group {
     display: flex;
     justify-content: center;
     gap: 10px;
-
 }
 
 .action-button {
@@ -278,7 +277,7 @@ main {
 @keyframes fall {
     0% {
         transform: translateY(-100vh);
-        opacity: 0;
+        opacity: 1;
     }
     100% {
         transform: translateY(100vh);

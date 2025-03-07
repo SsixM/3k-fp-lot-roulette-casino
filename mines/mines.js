@@ -1,14 +1,14 @@
-function createStars() {
+function createStars(count) {
     const starsContainer = document.querySelector('.stars');
-    for (let i = 0; i < 100; i++) { // Increased to 100 stars
+    starsContainer.innerHTML = ''; // Очищаем предыдущие фоновые звезды
+    for (let i = 0; i < count; i++) {
         const star = document.createElement('div');
         star.style.position = 'absolute';
-        star.style.width = '2px';
-        star.style.height = `${Math.random() * 4 + 2}px`;
+        star.style.width = '4px';
+        star.style.height = `${Math.random() * 6 + 4}px`;
         star.style.background = 'linear-gradient(to bottom, #fff, rgba(255, 255, 255, 0))';
-        star.style.boxShadow = '0 0 5px #fff';
+        star.style.boxShadow = '0 0 8px #fff';
         star.style.borderRadius = '50%';
-        star.style.opacity = 0;
 
         const x = Math.random() * window.innerWidth;
         const y = Math.random() * window.innerHeight * -1;
@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const userInput = document.getElementById('userInput');
     const menuButton = document.getElementById('menuButton');
     const errorMessage = document.getElementById('errorMessage');
-    let trapCount = 1; // Start with 1 as shown in the image
+    let trapCount = 1; // Число ловушек, выбираемых стрелочками
     const allowedTraps = [1, 3, 5, 7];
 
     function updateGrid() {
@@ -54,6 +54,17 @@ document.addEventListener('DOMContentLoaded', () => {
             mineButton.classList.remove('disabled');
             errorMessage.style.display = 'none';
             return true;
+        }
+    }
+
+    // Функция для получения количества звезд в полях в зависимости от trapCount
+    function getStarCount(trapCount) {
+        switch (trapCount) {
+            case 1: return 6; // 1 ловушка → 6 звезд
+            case 3: return 5; // 3 ловушки → 5 звезд
+            case 5: return 4; // 5 ловушек → 4 звезды
+            case 7: return 2; // 7 ловушек → 2 звезды
+            default: return 0;
         }
     }
 
@@ -84,24 +95,28 @@ document.addEventListener('DOMContentLoaded', () => {
             button.classList.remove('active');
         }
 
-        setTimeout(() => {
-            mineButton.classList.remove('loading');
-            const trapIndices = new Set();
-            while (trapIndices.size < trapCount) {
-                const randomIndex = Math.floor(Math.random() * buttons.length);
-                trapIndices.add(randomIndex);
-            }
-            trapIndices.forEach(index => {
-                buttons[index].classList.add('active');
-            });
+        const starCount = getStarCount(trapCount); // Получаем нужное количество звезд
+        const trapIndices = new Set();
+        while (trapIndices.size < starCount) { // Используем starCount вместо trapCount
+            const randomIndex = Math.floor(Math.random() * buttons.length);
+            trapIndices.add(randomIndex);
+        }
 
-            const stars = document.querySelectorAll('.stars div');
-            stars.forEach((star, index) => {
-                setTimeout(() => {
-                    star.style.animation = 'fadeInStars 0.5s ease-out forwards';
-                }, index * 50);
-            });
-        }, 1000);
+        // Последовательное появление звезд в полях
+        let delay = 0;
+        const trapArray = Array.from(trapIndices);
+        trapArray.forEach((index, i) => {
+            setTimeout(() => {
+                buttons[index].classList.add('active');
+                if (i === trapArray.length - 1) {
+                    mineButton.classList.remove('loading'); // Убираем loading после последней звезды
+                }
+            }, delay);
+            delay += 300; // Задержка 300 мс между звездами
+        });
+
+        // Обновляем фоновые звезды (оставляем как было, если не нужно менять)
+        createStars(6); // Можно оставить фиксированное число фоновых звезд, например, 6
     });
 
     userInput.addEventListener('input', () => {
@@ -139,6 +154,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }, { passive: false });
 
-    createStars();
+    createStars(6); // Изначально создаем 6 фоновых звезд
     updateGrid();
 });
