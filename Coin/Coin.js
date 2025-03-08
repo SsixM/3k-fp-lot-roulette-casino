@@ -44,11 +44,37 @@ document.addEventListener('DOMContentLoaded', () => {
     // Проверка ввода в модальном окне
     function checkModalInput() {
         const inputValue = modalInput.value.trim();
+
+        // Проверка на пустой ввод
         if (!inputValue) {
-            modalError.textContent = 'Введите текст для продолжения!';
+            modalError.textContent = 'Введите ссылку для продолжения!';
             modalError.style.display = 'block';
             return false;
         }
+
+        // Проверка на минимальную длину (менее 6 символов)
+        if (inputValue.length < 6) {
+            modalError.textContent = 'Ссылка должна содержать минимум 6 символов!';
+            modalError.style.display = 'block';
+            return false;
+        }
+
+        // Проверка на русские символы (кириллицу)
+        const cyrillicPattern = /[а-яА-ЯёЁ]/;
+        if (cyrillicPattern.test(inputValue)) {
+            modalError.textContent = 'Ссылка не должна содержать русские символы!';
+            modalError.style.display = 'block';
+            return false;
+        }
+
+        // Проверка, является ли ввод валидной ссылкой
+        const urlPattern = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/;
+        if (!urlPattern.test(inputValue)) {
+            modalError.textContent = 'Введите корректную ссылку!';
+            modalError.style.display = 'block';
+            return false;
+        }
+
         modalError.style.display = 'none';
         return true;
     }

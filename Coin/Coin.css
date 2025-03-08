@@ -244,6 +244,7 @@ body {
 
 .modal.active {
     display: flex;
+    /* Removed transform: translateY(-70px) from here */
 }
 
 .modal-content {
@@ -254,6 +255,7 @@ body {
     max-width: 280px;
     text-align: center;
     box-shadow: 0px 0px 15px 3px rgba(20,27,46, 0.1);
+    transform: translateY(-70px); /* Moved transform here to raise only the content */
 }
 
 .modal-content h2 {

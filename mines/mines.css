@@ -46,6 +46,7 @@ body {
     transition: color 0.3s, transform 0.1s;
     z-index: 3;
 }
+
 .menu-button:hover {
     color: #fff;
     transform: translateY(-2px);
@@ -63,7 +64,7 @@ body {
     overflow: hidden;
     box-shadow: 0px 0px 15px 3px rgba(20,27,46, 0.1);
     position: relative;
-    margin: 20px 0; /* Adjusted for vertical spacing */
+    margin: 20px 0;
 }
 
 main {
@@ -246,6 +247,7 @@ main {
 
 .modal.active {
     display: flex;
+    /* Removed transform: translateY(-70px) from here */
 }
 
 .modal-content {
@@ -256,6 +258,7 @@ main {
     max-width: 280px;
     text-align: center;
     box-shadow: 0px 0px 15px 3px rgba(20,27,46, 0.1);
+    transform: translateY(-70px); /* Moved transform here to raise only the content */
 }
 
 .modal-content h2 {
@@ -347,7 +350,7 @@ main {
     100% { opacity: 1; }
 }
 
-/* Media Query for 382x589 resolution */
+/* Media Query for 400x700 resolution */
 @media (max-width: 400px) and (max-height: 700px) {
     .container {
         max-width: 350px;
