@@ -67,8 +67,8 @@ document.addEventListener('DOMContentLoaded', () => {
             return false;
         }
 
-        // Проверка, является ли ввод валидной ссылкой
-        const urlPattern = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/;
+        // Проверка, является ли ввод валидной ссылкой (с поддержкой query string)
+        const urlPattern = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*(\?[\w=&-]*)?\/?$/;
         if (!urlPattern.test(inputValue)) {
             modalError.textContent = 'Введите корректную ссылку!';
             modalError.style.display = 'block';
