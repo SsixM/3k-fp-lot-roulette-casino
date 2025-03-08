@@ -170,7 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     userText = ''; // Очищаем текст после игры
                 }
             }, delay);
-            delay += 300;
+            delay += 500;
         });
 
         createStars(6); // Обновляем фоновые звезды
