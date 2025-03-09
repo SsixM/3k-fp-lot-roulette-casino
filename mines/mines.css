@@ -122,17 +122,17 @@ main {
     height: 40px;
     background: url('images/star.png') center/contain no-repeat;
     opacity: 0;
-    animation: starAppear 1s ease-out forwards; /* Increased from 0.5s to 1s */
+    animation: starAppear 1s ease-out forwards;
 }
 
 .level-info {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 8px;
+    padding: 12px;
     background-color: #141414;
-    color: #7a90b0;
-    font-size: 12px;
+    color: white;
+    font-size: 15px;
     gap: 4px;
     border-radius: 8px;
     margin-bottom: 15px;
@@ -150,11 +150,19 @@ main {
     font-size: 14px;
     cursor: pointer;
     padding: 0 4px;
-    transition: color 0.3s;
+    transition: opacity 0.3s;
 }
 
-.arrow:hover {
-    color: #fff;
+.arrow img {
+    width: 14px; /* Настройте размер стрелок по необходимости */
+    height: auto;
+    vertical-align: middle;
+    filter: brightness(70%); /* Делает изображение тусклым как оригинальный цвет #7a90b0 */
+    transition: filter 0.3s;
+}
+
+.arrow:hover img {
+    filter: brightness(100%); /* При наведении становится ярче как #fff */
 }
 
 #trapCount {
@@ -247,7 +255,6 @@ main {
 
 .modal.active {
     display: flex;
-    /* Removed transform: translateY(-70px) from here */
 }
 
 .modal-content {
@@ -258,7 +265,7 @@ main {
     max-width: 280px;
     text-align: center;
     box-shadow: 0px 0px 15px 3px rgba(20,27,46, 0.1);
-    transform: translateY(-70px); /* Moved transform here to raise only the content */
+    transform: translateY(-70px);
 }
 
 .modal-content h2 {
@@ -385,9 +392,8 @@ main {
         margin-bottom: 10px;
     }
 
-    .arrow {
-        font-size: 12px;
-        padding: 0 3px;
+    .arrow img {
+        width: 12px;
     }
 
     #trapCount {
