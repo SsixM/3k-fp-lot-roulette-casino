@@ -22,7 +22,6 @@ function createStars() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Проверка Telegram Web App с задержкой для инициализации
     setTimeout(() => {
         if (!window.Telegram || !window.Telegram.WebApp) {
             document.body.innerHTML = '<h1 style="color: white; text-align: center;">Доступ возможен только через Telegram</h1>';
@@ -52,8 +51,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const saved = localStorage.getItem('coinCharges');
             const lastReset = localStorage.getItem('coinLastReset');
             const now = Date.now();
-            if (saved && lastReset && (now - lastReset < 30 * 60 * 1000)) {
-                charges = parseInt(saved);
+            if (saved && lastReset) {
+                const timeElapsed = now - parseInt(lastReset);
+                if (timeElapsed >= 30 * 60 * 1000) {
+                    charges = 5;
+                    localStorage.setItem('coinCharges', charges);
+                    localStorage.setItem('coinLastReset', now);
+                } else {
+                    charges = parseInt(saved);
+                }
             } else {
                 charges = 5;
                 localStorage.setItem('coinCharges', charges);
@@ -64,26 +70,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
         function saveCharges() {
             localStorage.setItem('coinCharges', charges);
+            localStorage.setItem('coinLastReset', Date.now());
         }
 
         function updateChargeDisplay() {
             chargeCountElement.textContent = charges;
             if (charges === 0) {
                 signalButton.classList.add('disabled');
+            } else {
+                signalButton.classList.remove('disabled');
             }
         }
 
-        setInterval(() => {
-            const lastReset = localStorage.getItem('coinLastReset');
+        function checkChargeReset() {
+            const lastReset = parseInt(localStorage.getItem('coinLastReset') || 0);
             const now = Date.now();
             if (now - lastReset >= 30 * 60 * 1000) {
                 charges = 5;
-                localStorage.setItem('coinCharges', charges);
-                localStorage.setItem('coinLastReset', now);
-                signalButton.classList.remove('disabled');
+                saveCharges();
                 updateChargeDisplay();
             }
-        }, 60000);
+        }
+
+        setInterval(checkChargeReset, 1000); // Проверка каждую секунду
 
         modal.classList.add('active');
         signalButton.classList.add('disabled');
@@ -127,7 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (checkModalInput()) {
                 userText = modalInput.value.trim();
                 modal.classList.remove('active');
-                signalButton.classList.remove('disabled');
+                if (charges > 0) signalButton.classList.remove('disabled');
                 if (hasFlipped) {
                     hasFlipped = false;
                 }
@@ -189,5 +198,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
         createStars();
         loadCharges();
-    }, 500); // Задержка 500мс для инициализации Telegram Web App
+    }, 500);
 });
