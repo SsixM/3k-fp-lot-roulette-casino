@@ -21,14 +21,17 @@ function createStars() {
     }
 }
 
-// Проверка Telegram Web App
-if (!window.Telegram || !window.Telegram.WebApp) {
-    document.body.innerHTML = '<h1 style="color: white; text-align: center;">Доступ возможен только через Telegram</h1>';
-} else {
-    Telegram.WebApp.ready();
-    Telegram.WebApp.expand();
+document.addEventListener('DOMContentLoaded', () => {
+    // Проверка Telegram Web App с задержкой для инициализации
+    setTimeout(() => {
+        if (!window.Telegram || !window.Telegram.WebApp) {
+            document.body.innerHTML = '<h1 style="color: white; text-align: center;">Доступ возможен только через Telegram</h1>';
+            return;
+        }
 
-    document.addEventListener('DOMContentLoaded', () => {
+        Telegram.WebApp.ready();
+        Telegram.WebApp.expand();
+
         const coin = document.getElementById('coin');
         const signalButton = document.getElementById('signalButton');
         const eagleCard = document.getElementById('eagleCard');
@@ -45,7 +48,6 @@ if (!window.Telegram || !window.Telegram.WebApp) {
         let hasFlipped = false;
         let charges = 5;
 
-        // Загрузка и сохранение зарядов
         function loadCharges() {
             const saved = localStorage.getItem('coinCharges');
             const lastReset = localStorage.getItem('coinLastReset');
@@ -71,7 +73,6 @@ if (!window.Telegram || !window.Telegram.WebApp) {
             }
         }
 
-        // Проверка обновления зарядов каждые 30 минут
         setInterval(() => {
             const lastReset = localStorage.getItem('coinLastReset');
             const now = Date.now();
@@ -82,7 +83,7 @@ if (!window.Telegram || !window.Telegram.WebApp) {
                 signalButton.classList.remove('disabled');
                 updateChargeDisplay();
             }
-        }, 60000); // Проверка каждую минуту
+        }, 60000);
 
         modal.classList.add('active');
         signalButton.classList.add('disabled');
@@ -188,5 +189,5 @@ if (!window.Telegram || !window.Telegram.WebApp) {
 
         createStars();
         loadCharges();
-    });
-}
+    }, 500); // Задержка 500мс для инициализации Telegram Web App
+});

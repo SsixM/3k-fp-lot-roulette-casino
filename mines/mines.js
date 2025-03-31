@@ -22,14 +22,17 @@ function createStars(count) {
     }
 }
 
-// Проверка Telegram Web App
-if (!window.Telegram || !window.Telegram.WebApp) {
-    document.body.innerHTML = '<h1 style="color: white; text-align: center;">Доступ возможен только через Telegram</h1>';
-} else {
-    Telegram.WebApp.ready();
-    Telegram.WebApp.expand();
+document.addEventListener('DOMContentLoaded', () => {
+    // Проверка Telegram Web App с задержкой для инициализации
+    setTimeout(() => {
+        if (!window.Telegram || !window.Telegram.WebApp) {
+            document.body.innerHTML = '<h1 style="color: white; text-align: center;">Доступ возможен только через Telegram</h1>';
+            return;
+        }
 
-    document.addEventListener('DOMContentLoaded', () => {
+        Telegram.WebApp.ready();
+        Telegram.WebApp.expand();
+
         const grid = document.getElementById('grid');
         const trapCountElement = document.getElementById('trapCount');
         const decreaseButton = document.getElementById('decrease');
@@ -225,5 +228,5 @@ if (!window.Telegram || !window.Telegram.WebApp) {
         createStars(6);
         updateGrid();
         loadCharges();
-    });
-}
+    }, 500); // Задержка 500мс для инициализации Telegram Web App
+});
