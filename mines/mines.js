@@ -23,28 +23,13 @@ function createStars(count) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Проверка Telegram WebApp
-    if (typeof Telegram === 'undefined' || !Telegram.WebApp) {
-        document.body.innerHTML = '<h1>Доступ возможен только через Telegram</h1>';
-        return;
-    }
-
-    Telegram.WebApp.ready();
-    const user = Telegram.WebApp.initDataUnsafe.user;
-    if (!user) {
-        document.body.innerHTML = '<h1>Ошибка аутентификации Telegram</h1>';
-        Telegram.WebApp.close();
-        return;
-    }
-
     // Элементы DOM
     const grid = document.getElementById('grid');
     const trapCountElement = document.getElementById('trapCount');
     const decreaseButton = document.getElementById('decrease');
     const increaseButton = document.getElementById('increase');
-    县委Button = document.getElementById('mineButton');
+    const mineButton = document.getElementById('mineButton');
     const menuButton = document.getElementById('menuButton');
-    const errorMessage = document.getElementById('errorMessage');
     const modal = document.getElementById('inputModal');
     const modalInput = document.getElementById('modalUserInput');
     const modalSubmit = document.getElementById('modalSubmit');
@@ -58,16 +43,30 @@ document.addEventListener('DOMContentLoaded', () => {
     let userText = '';
     let hasPlayed = false;
 
+    // Telegram проверка и инициализация
+    let userId = 'test_user'; // Fallback для теста вне Telegram
+    if (typeof Telegram !== 'undefined' && Telegram.WebApp) {
+        Telegram.WebApp.ready();
+        const user = Telegram.WebApp.initDataUnsafe.user;
+        if (user && user.id) {
+            userId = user.id;
+        } else {
+            console.warn('Telegram user not found, using test mode');
+        }
+        Telegram.WebApp.expand();
+    } else {
+        console.warn('Not running in Telegram, using test mode');
+    }
+
     // Настройки зарядов
     const MAX_CHARGES = 5;
     const CHARGE_REFRESH_TIME = 30 * 60 * 1000; // 30 минут
-    const storageKey = `charges_${user.id}_mines`;
+    const storageKey = `charges_${userId}_mines`;
     let chargesData = JSON.parse(localStorage.getItem(storageKey)) || {
         count: MAX_CHARGES,
         lastRefresh: Date.now()
     };
 
-    // Показать модальное окно при загрузке
     modal.classList.add('active');
     mineButton.classList.add('disabled');
 
@@ -80,63 +79,43 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Обновление зарядов
     function updateCharges() {
         const now = Date.now();
-        const timeSinceLastRefresh = now - chargesData.lastRefresh;
-        if (timeSinceLastRefresh >= CHARGE_REFRESH_TIME) {
+        if (now - chargesData.lastRefresh >= CHARGE_REFRESH_TIME) {
             chargesData.count = MAX_CHARGES;
             chargesData.lastRefresh = now;
+            localStorage.setItem(storageKey, JSON.stringify(chargesData));
         }
-        localStorage.setItem(storageKey, JSON.stringify(chargesData));
         chargeCountEl.textContent = chargesData.count;
         updateButtonState();
     }
 
     function updateButtonState() {
-        if (chargesData.count > 0 && userText && !hasPlayed) {
-            mineButton.classList.remove('disabled');
-            mineButton.disabled = false;
-        } else {
-            mineButton.classList.add('disabled');
-            mineButton.disabled = true;
-        }
+        mineButton.disabled = !(chargesData.count > 0 && userText && !hasPlayed);
+        mineButton.classList.toggle('disabled', mineButton.disabled);
     }
 
-    function updateTimer() {
+    function updateTimer(timestamp) {
         const now = Date.now();
         const timeLeft = CHARGE_REFRESH_TIME - (now - chargesData.lastRefresh);
         if (timeLeft <= 0) {
             updateCharges();
-            return;
+            timerEl.textContent = 'Обновление: 30:00';
+        } else {
+            const minutes = Math.floor(timeLeft / (60 * 1000));
+            const seconds = Math.floor((timeLeft % (60 * 1000)) / 1000);
+            timerEl.textContent = `Обновление: ${minutes}:${seconds.toString().padStart(2, '0')}`;
         }
-        const minutes = Math.floor(timeLeft / (60 * 1000));
-        const seconds = Math.floor((timeLeft % (60 * 1000)) / 1000);
-        timerEl.textContent = `Обновление: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+        requestAnimationFrame(updateTimer);
     }
 
-    // Проверка ввода в модальном окне
     function checkModalInput() {
         const inputValue = modalInput.value.trim();
-        if (!inputValue) {
-            modalError.textContent = 'Введите ссылку для продолжения!';
-            modalError.style.display = 'block';
-            return false;
-        }
-        if (inputValue.length < 6) {
-            modalError.textContent = 'Ссылка должна содержать минимум 6 символов!';
-            modalError.style.display = 'block';
-            return false;
-        }
-        const cyrillicPattern = /[а-яА-ЯёЁ]/;
-        if (cyrillicPattern.test(inputValue)) {
-            modalError.textContent = 'Ссылка не должна содержать русские символы!';
-            modalError.style.display = 'block';
-            return false;
-        }
-        const urlPattern = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*(\?[\w=&-]*)?\/?$/;
-        if (!urlPattern.test(inputValue)) {
-            modalError.textContent = 'Введите корректную ссылку!';
+        if (!inputValue || inputValue.length < 6 || /[а-яА-ЯёЁ]/.test(inputValue) || !/^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*(\?[\w=&-]*)?\/?$/.test(inputValue)) {
+            modalError.textContent = inputValue ?
+                (inputValue.length < 6 ? 'Минимум 6 символов!' :
+                    /[а-яА-ЯёЁ]/.test(inputValue) ? 'Без русских символов!' : 'Некорректная ссылка!') :
+                'Введите ссылку!';
             modalError.style.display = 'block';
             return false;
         }
@@ -145,13 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function getStarCount(trapCount) {
-        switch (trapCount) {
-            case 1: return 6;
-            case 3: return 5;
-            case 5: return 4;
-            case 7: return 2;
-            default: return 0;
-        }
+        return { 1: 6, 3: 5, 5: 4, 7: 2 }[trapCount] || 0;
     }
 
     decreaseButton.addEventListener('click', () => {
@@ -174,31 +147,26 @@ document.addEventListener('DOMContentLoaded', () => {
         if (checkModalInput()) {
             userText = modalInput.value.trim();
             modal.classList.remove('active');
+            hasPlayed = false;
             updateButtonState();
-            if (hasPlayed) hasPlayed = false;
         }
     });
 
     modalInput.addEventListener('input', checkModalInput);
 
     mineButton.addEventListener('click', () => {
-        if (isLoading || mineButton.classList.contains('disabled')) return;
+        if (isLoading || mineButton.disabled) return;
 
         if (hasPlayed) {
             modalInput.value = '';
             modal.classList.add('active');
-            mineButton.classList.add('disabled');
             return;
         }
-
-        if (chargesData.count <= 0) return;
 
         isLoading = true;
         mineButton.classList.add('loading');
         const buttons = grid.getElementsByClassName('grid-button');
-        for (let button of buttons) {
-            button.classList.remove('active');
-        }
+        for (let button of buttons) button.classList.remove('active');
 
         chargesData.count--;
         localStorage.setItem(storageKey, JSON.stringify(chargesData));
@@ -211,11 +179,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         let delay = 0;
-        const trapArray = Array.from(trapIndices);
-        trapArray.forEach((index, i) => {
+        Array.from(trapIndices).forEach((index, i) => {
             setTimeout(() => {
                 buttons[index].classList.add('active');
-                if (i === trapArray.length - 1) {
+                if (i === trapIndices.size - 1) {
                     mineButton.classList.remove('loading');
                     isLoading = false;
                     hasPlayed = true;
@@ -236,14 +203,10 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('gesturestart', e => e.preventDefault(), { passive: false });
     document.addEventListener('gesturechange', e => e.preventDefault(), { passive: false });
     document.addEventListener('gestureend', e => e.preventDefault(), { passive: false });
-    document.addEventListener('touchmove', e => {
-        if (e.touches.length > 1) e.preventDefault();
-    }, { passive: false });
+    document.addEventListener('touchmove', e => e.touches.length > 1 && e.preventDefault(), { passive: false });
 
     createStars(6);
     updateGrid();
     updateCharges();
-    setInterval(updateTimer, 1000);
-
-    Telegram.WebApp.expand();
+    requestAnimationFrame(updateTimer);
 });
