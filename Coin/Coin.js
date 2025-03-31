@@ -1,4 +1,3 @@
-// Создание падающих звёзд
 function createStars() {
     const starsContainer = document.querySelector('.stars');
     for (let i = 0; i < 50; i++) {
@@ -23,6 +22,21 @@ function createStars() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Telegram проверка
+    if (typeof Telegram === 'undefined' || !Telegram.WebApp) {
+        document.body.innerHTML = '<h1>Доступ возможен только через Telegram</h1>';
+        return;
+    }
+
+    Telegram.WebApp.ready();
+    const user = Telegram.WebApp.initDataUnsafe.user;
+    if (!user) {
+        document.body.innerHTML = '<h1>Ошибка аутентификации Telegram</h1>';
+        Telegram.WebApp.close();
+        return;
+    }
+
+    // Элементы DOM
     const coin = document.getElementById('coin');
     const signalButton = document.getElementById('signalButton');
     const eagleCard = document.getElementById('eagleCard');
@@ -33,53 +47,95 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalInput = document.getElementById('modalUserInput');
     const modalSubmit = document.getElementById('modalSubmit');
     const modalError = document.getElementById('modalError');
+    const chargeCountEl = document.getElementById('chargeCount');
+    const timerEl = document.getElementById('timer');
+
     let isFlipping = false;
     let userText = '';
     let hasFlipped = false;
 
-    // Показать модальное окно при загрузке
+    // Настройки зарядов
+    const MAX_CHARGES = 5;
+    const CHARGE_REFRESH_TIME = 30 * 60 * 1000;
+    const storageKey = `charges_${user.id}_coin`;
+
+    let chargesData = JSON.parse(localStorage.getItem(storageKey)) || {
+        count: MAX_CHARGES,
+        lastRefresh: Date.now()
+    };
+
+    // Показать модальное окно
     modal.classList.add('active');
     signalButton.classList.add('disabled');
 
-    // Проверка ввода в модальном окне
+    // Функции зарядов
+    function updateCharges() {
+        const now = Date.now();
+        const timeSinceLastRefresh = now - chargesData.lastRefresh;
+
+        if (timeSinceLastRefresh >= CHARGE_REFRESH_TIME) {
+            chargesData.count = MAX_CHARGES;
+            chargesData.lastRefresh = now;
+        }
+
+        localStorage.setItem(storageKey, JSON.stringify(chargesData));
+        chargeCountEl.textContent = chargesData.count;
+        updateButtonState();
+    }
+
+    function updateButtonState() {
+        if (chargesData.count > 0 && userText && !hasFlipped) {
+            signalButton.classList.remove('disabled');
+            signalButton.disabled = false;
+        } else {
+            signalButton.classList.add('disabled');
+            signalButton.disabled = true;
+        }
+    }
+
+    function updateTimer() {
+        const now = Date.now();
+        const timeLeft = CHARGE_REFRESH_TIME - (now - chargesData.lastRefresh);
+
+        if (timeLeft <= 0) {
+            updateCharges();
+            return;
+        }
+
+        const minutes = Math.floor(timeLeft / (60 * 1000));
+        const seconds = Math.floor((timeLeft % (60 * 1000)) / 1000);
+        timerEl.textContent = `Обновление: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+    // Проверка ввода
     function checkModalInput() {
         const inputValue = modalInput.value.trim();
-
-        // Проверка на пустой ввод
         if (!inputValue) {
             modalError.textContent = 'Введите ссылку для продолжения!';
             modalError.style.display = 'block';
             return false;
         }
-
-        // Проверка на минимальную длину (менее 6 символов)
         if (inputValue.length < 6) {
             modalError.textContent = 'Ссылка должна содержать минимум 6 символов!';
             modalError.style.display = 'block';
             return false;
         }
-
-        // Проверка на русские символы (кириллицу)
         const cyrillicPattern = /[а-яА-ЯёЁ]/;
         if (cyrillicPattern.test(inputValue)) {
             modalError.textContent = 'Ссылка не должна содержать русские символы!';
             modalError.style.display = 'block';
             return false;
         }
-
-        // Проверка, является ли ввод валидной ссылкой (с поддержкой query string)
         const urlPattern = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*(\?[\w=&-]*)?\/?$/;
         if (!urlPattern.test(inputValue)) {
             modalError.textContent = 'Введите корректную ссылку!';
             modalError.style.display = 'block';
             return false;
         }
-
         modalError.style.display = 'none';
         return true;
     }
 
-    // Сброс состояния карт и анимации
     function resetCards() {
         eagleCard.classList.remove('winner', 'loser');
         tailCard.classList.remove('winner', 'loser');
@@ -87,15 +143,12 @@ document.addEventListener('DOMContentLoaded', () => {
         void coin.offsetWidth;
     }
 
-    // Обработка подтверждения в модальном окне
     modalSubmit.addEventListener('click', () => {
         if (checkModalInput()) {
             userText = modalInput.value.trim();
             modal.classList.remove('active');
-            signalButton.classList.remove('disabled');
-            if (hasFlipped) {
-                hasFlipped = false; // Сбрасываем флаг после повторного ввода
-            }
+            updateButtonState();
+            if (hasFlipped) hasFlipped = false;
         }
     });
 
@@ -104,71 +157,57 @@ document.addEventListener('DOMContentLoaded', () => {
     signalButton.addEventListener('click', () => {
         if (isFlipping || signalButton.classList.contains('disabled')) return;
 
-        // Если монетка уже была подкинута, показываем модальное окно
         if (hasFlipped) {
             modalInput.value = '';
             modal.classList.add('active');
-            signalButton.classList.add('disabled');
             return;
         }
+
+        if (chargesData.count <= 0) return;
 
         isFlipping = true;
         signalButton.classList.add('loading');
         resetCards();
 
+        chargesData.count--;
+        localStorage.setItem(storageKey, JSON.stringify(chargesData));
+        updateCharges();
+
         const result = Math.random() < 0.5 ? 'heads' : 'tails';
-        if (result === 'heads') {
-            coin.style.animation = 'coinSpinHeads 3s ease-in-out forwards';
-        } else {
-            coin.style.animation = 'coinSpinTails 3s ease-in-out forwards';
-        }
+        coin.style.animation = result === 'heads' ?
+            'coinSpinHeads 3s ease-in-out forwards' :
+            'coinSpinTails 3s ease-in-out forwards';
 
         setTimeout(() => {
             signalButton.classList.remove('loading');
             if (result === 'heads') {
                 eagleCard.classList.add('winner');
                 tailCard.classList.add('loser');
-                console.log('Result: heads (Орёл), Coin Face: coineagle.png');
             } else {
                 tailCard.classList.add('winner');
                 eagleCard.classList.add('loser');
-                console.log('Result: tails (Решка), Coin Face: cointail.png');
             }
             isFlipping = false;
             hasFlipped = true;
-            userText = ''; // Очищаем текст после броска
+            userText = '';
+            updateButtonState();
         }, 3000);
     });
 
     menuButton.addEventListener('click', () => {
-        window.location.href = 'https://devastcheats.github.io/3k-fp-lot-roulette-casino/';
+        window.location.href = 'menu.html';
     });
 
-    // Предотвращение масштабирования
-    document.addEventListener('gesturestart', (e) => e.preventDefault(), { passive: false });
-    document.addEventListener('gesturechange', (e) => e.preventDefault(), { passive: false });
-    document.addEventListener('gestureend', (e) => e.preventDefault(), { passive: false });
-    document.addEventListener('touchmove', (e) => {
+    document.addEventListener('gesturestart', e => e.preventDefault(), { passive: false });
+    document.addEventListener('gesturechange', e => e.preventDefault(), { passive: false });
+    document.addEventListener('gestureend', e => e.preventDefault(), { passive: false });
+    document.addEventListener('touchmove', e => {
         if (e.touches.length > 1) e.preventDefault();
     }, { passive: false });
 
     createStars();
+    updateCharges();
+    setInterval(updateTimer, 1000);
 
-    // Telegram Web App initialization
-    if (window.Telegram) {
-        Telegram.WebApp.ready();
-        Telegram.WebApp.expand();
-        console.log(Telegram.WebApp.viewportHeight);
-        console.log(window.innerWidth);
-    }
+    Telegram.WebApp.expand();
 });
-
-// Watermark
-const watermarkImg = new Image();
-watermarkImg.src = 'watermark.png';
-watermarkImg.onload = () => {
-    document.body.style.backgroundImage = `url('watermark.png')`;
-};
-watermarkImg.onerror = () => {
-    console.log('Watermark image not found, skipping watermark.');
-};

@@ -1,6 +1,6 @@
 function createStars(count) {
     const starsContainer = document.querySelector('.stars');
-    starsContainer.innerHTML = ''; // Очищаем предыдущие фоновые звезды
+    starsContainer.innerHTML = '';
     for (let i = 0; i < count; i++) {
         const star = document.createElement('div');
         star.style.position = 'absolute';
@@ -23,6 +23,21 @@ function createStars(count) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Telegram проверка
+    if (typeof Telegram === 'undefined' || !Telegram.WebApp) {
+        document.body.innerHTML = '<h1>Доступ возможен только через Telegram</h1>';
+        return;
+    }
+
+    Telegram.WebApp.ready();
+    const user = Telegram.WebApp.initDataUnsafe.user;
+    if (!user) {
+        document.body.innerHTML = '<h1>Ошибка аутентификации Telegram</h1>';
+        Telegram.WebApp.close();
+        return;
+    }
+
+    // Элементы DOM
     const grid = document.getElementById('grid');
     const trapCountElement = document.getElementById('trapCount');
     const decreaseButton = document.getElementById('decrease');
@@ -34,13 +49,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalInput = document.getElementById('modalUserInput');
     const modalSubmit = document.getElementById('modalSubmit');
     const modalError = document.getElementById('modalError');
-    let trapCount = 1; // Число ловушек, выбираемых стрелочками
+    const chargeCountEl = document.getElementById('chargeCount');
+    const timerEl = document.getElementById('timer');
+
+    let trapCount = 1;
     const allowedTraps = [1, 3, 5, 7];
     let isLoading = false;
     let userText = '';
     let hasPlayed = false;
 
-    // Показать модальное окно при загрузке
+    // Настройки зарядов
+    const MAX_CHARGES = 5;
+    const CHARGE_REFRESH_TIME = 30 * 60 * 1000;
+    const storageKey = `charges_${user.id}_mines`;
+
+    let chargesData = JSON.parse(localStorage.getItem(storageKey)) || {
+        count: MAX_CHARGES,
+        lastRefresh: Date.now()
+    };
+
     modal.classList.add('active');
     mineButton.classList.add('disabled');
 
@@ -53,51 +80,78 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Проверка ввода в модальном окне
+    function updateCharges() {
+        const now = Date.now();
+        const timeSinceLastRefresh = now - chargesData.lastRefresh;
+
+        if (timeSinceLastRefresh >= CHARGE_REFRESH_TIME) {
+            chargesData.count = MAX_CHARGES;
+            chargesData.lastRefresh = now;
+        }
+
+        localStorage.setItem(storageKey, JSON.stringify(chargesData));
+        chargeCountEl.textContent = chargesData.count;
+        updateButtonState();
+    }
+
+    function updateButtonState() {
+        if (chargesData.count > 0 && userText && !hasPlayed) {
+            mineButton.classList.remove('disabled');
+            mineButton.disabled = false;
+        } else {
+            mineButton.classList.add('disabled');
+            mineButton.disabled = true;
+        }
+    }
+
+    function updateTimer() {
+        const now = Date.now();
+        const timeLeft = CHARGE_REFRESH_TIME - (now - chargesData.lastRefresh);
+
+        if (timeLeft <= 0) {
+            updateCharges();
+            return;
+        }
+
+        const minutes = Math.floor(timeLeft / (60 * 1000));
+        const seconds = Math.floor((timeLeft % (60 * 1000)) / 1000);
+        timerEl.textContent = `Обновление: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+    }
+
     function checkModalInput() {
         const inputValue = modalInput.value.trim();
-
-        // Проверка на пустой ввод
         if (!inputValue) {
             modalError.textContent = 'Введите ссылку для продолжения!';
             modalError.style.display = 'block';
             return false;
         }
-
-        // Проверка на минимальную длину (менее 6 символов)
         if (inputValue.length < 6) {
             modalError.textContent = 'Ссылка должна содержать минимум 6 символов!';
             modalError.style.display = 'block';
             return false;
         }
-
-        // Проверка на русские символы (кириллицу)
         const cyrillicPattern = /[а-яА-ЯёЁ]/;
         if (cyrillicPattern.test(inputValue)) {
             modalError.textContent = 'Ссылка не должна содержать русские символы!';
             modalError.style.display = 'block';
             return false;
         }
-
-        // Проверка, является ли ввод валидной ссылкой (с поддержкой query string)
         const urlPattern = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*(\?[\w=&-]*)?\/?$/;
         if (!urlPattern.test(inputValue)) {
             modalError.textContent = 'Введите корректную ссылку!';
             modalError.style.display = 'block';
             return false;
         }
-
         modalError.style.display = 'none';
         return true;
     }
 
-    // Функция для получения количества звезд в полях в зависимости от trapCount
     function getStarCount(trapCount) {
         switch (trapCount) {
-            case 1: return 6; // 1 ловушка → 6 звезд
-            case 3: return 5; // 3 ловушки → 5 звезд
-            case 5: return 4; // 5 ловушек → 4 звезды
-            case 7: return 2; // 7 ловушек → 2 звезды
+            case 1: return 6;
+            case 3: return 5;
+            case 5: return 4;
+            case 7: return 2;
             default: return 0;
         }
     }
@@ -118,15 +172,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Обработка подтверждения в модальном окне
     modalSubmit.addEventListener('click', () => {
         if (checkModalInput()) {
             userText = modalInput.value.trim();
             modal.classList.remove('active');
-            mineButton.classList.remove('disabled');
-            if (hasPlayed) {
-                hasPlayed = false; // Сбрасываем флаг после повторного ввода
-            }
+            updateButtonState();
+            if (hasPlayed) hasPlayed = false;
         }
     });
 
@@ -135,13 +186,13 @@ document.addEventListener('DOMContentLoaded', () => {
     mineButton.addEventListener('click', () => {
         if (isLoading || mineButton.classList.contains('disabled')) return;
 
-        // Если игра уже была сыграна, показываем модальное окно
         if (hasPlayed) {
             modalInput.value = '';
             modal.classList.add('active');
-            mineButton.classList.add('disabled');
             return;
         }
+
+        if (chargesData.count <= 0) return;
 
         isLoading = true;
         mineButton.classList.add('loading');
@@ -150,14 +201,16 @@ document.addEventListener('DOMContentLoaded', () => {
             button.classList.remove('active');
         }
 
+        chargesData.count--;
+        localStorage.setItem(storageKey, JSON.stringify(chargesData));
+        updateCharges();
+
         const starCount = getStarCount(trapCount);
         const trapIndices = new Set();
         while (trapIndices.size < starCount) {
-            const randomIndex = Math.floor(Math.random() * buttons.length);
-            trapIndices.add(randomIndex);
+            trapIndices.add(Math.floor(Math.random() * buttons.length));
         }
 
-        // Последовательное появление звезд в полях
         let delay = 0;
         const trapArray = Array.from(trapIndices);
         trapArray.forEach((index, i) => {
@@ -167,37 +220,31 @@ document.addEventListener('DOMContentLoaded', () => {
                     mineButton.classList.remove('loading');
                     isLoading = false;
                     hasPlayed = true;
-                    userText = ''; // Очищаем текст после игры
+                    userText = '';
+                    updateButtonState();
                 }
             }, delay);
             delay += 500;
         });
 
-        createStars(6); // Обновляем фоновые звезды
+        createStars(6);
     });
 
     menuButton.addEventListener('click', () => {
-        window.location.href = 'https://devastcheats.github.io/3k-fp-lot-roulette-casino/';
+        window.location.href = 'menu.html';
     });
 
-    document.addEventListener('gesturestart', function (e) {
-        e.preventDefault();
+    document.addEventListener('gesturestart', e => e.preventDefault(), { passive: false });
+    document.addEventListener('gesturechange', e => e.preventDefault(), { passive: false });
+    document.addEventListener('gestureend', e => e.preventDefault(), { passive: false });
+    document.addEventListener('touchmove', e => {
+        if (e.touches.length > 1) e.preventDefault();
     }, { passive: false });
 
-    document.addEventListener('gesturechange', function (e) {
-        e.preventDefault();
-    }, { passive: false });
-
-    document.addEventListener('gestureend', function (e) {
-        e.preventDefault();
-    }, { passive: false });
-
-    document.addEventListener('touchmove', function (e) {
-        if (e.touches.length > 1) {
-            e.preventDefault();
-        }
-    }, { passive: false });
-
-    createStars(6); // Изначально создаем 6 фоновых звезд
+    createStars(6);
     updateGrid();
+    updateCharges();
+    setInterval(updateTimer, 1000);
+
+    Telegram.WebApp.expand();
 });

@@ -67,6 +67,18 @@ body {
     margin: 20px 0;
 }
 
+.charges-info {
+    text-align: center;
+    margin: 20px 0;
+    color: white;
+    font-size: 18px;
+}
+
+#timer {
+    font-size: 14px;
+    margin-top: 5px;
+}
+
 main {
     padding: 15px;
     position: relative;
@@ -154,15 +166,15 @@ main {
 }
 
 .arrow img {
-    width: 14px; /* Настройте размер стрелок по необходимости */
+    width: 14px;
     height: auto;
     vertical-align: middle;
-    filter: brightness(70%); /* Делает изображение тусклым как оригинальный цвет #7a90b0 */
+    filter: brightness(70%);
     transition: filter 0.3s;
 }
 
 .arrow:hover img {
-    filter: brightness(100%); /* При наведении становится ярче как #fff */
+    filter: brightness(100%);
 }
 
 #trapCount {
