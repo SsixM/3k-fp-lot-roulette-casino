@@ -23,6 +23,20 @@ function createStars(count) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Проверка Telegram WebApp
+    if (typeof Telegram === 'undefined' || !Telegram.WebApp) {
+        document.body.innerHTML = '<h1>Доступ возможен только через Telegram</h1>';
+        return;
+    }
+
+    Telegram.WebApp.ready();
+    const user = Telegram.WebApp.initDataUnsafe.user;
+    if (!user || !user.id) {
+        document.body.innerHTML = '<h1>Ошибка аутентификации Telegram</h1>';
+        Telegram.WebApp.close();
+        return;
+    }
+
     // Элементы DOM
     const grid = document.getElementById('grid');
     const trapCountElement = document.getElementById('trapCount');
@@ -43,25 +57,10 @@ document.addEventListener('DOMContentLoaded', () => {
     let userText = '';
     let hasPlayed = false;
 
-    // Telegram проверка и инициализация
-    let userId = 'test_user'; // Fallback для теста вне Telegram
-    if (typeof Telegram !== 'undefined' && Telegram.WebApp) {
-        Telegram.WebApp.ready();
-        const user = Telegram.WebApp.initDataUnsafe.user;
-        if (user && user.id) {
-            userId = user.id;
-        } else {
-            console.warn('Telegram user not found, using test mode');
-        }
-        Telegram.WebApp.expand();
-    } else {
-        console.warn('Not running in Telegram, using test mode');
-    }
-
     // Настройки зарядов
     const MAX_CHARGES = 5;
     const CHARGE_REFRESH_TIME = 30 * 60 * 1000; // 30 минут
-    const storageKey = `charges_${userId}_mines`;
+    const storageKey = `charges_${user.id}_mines`;
     let chargesData = JSON.parse(localStorage.getItem(storageKey)) || {
         count: MAX_CHARGES,
         lastRefresh: Date.now()
@@ -69,6 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     modal.classList.add('active');
     mineButton.classList.add('disabled');
+    Telegram.WebApp.expand();
 
     function updateGrid() {
         grid.innerHTML = '';
