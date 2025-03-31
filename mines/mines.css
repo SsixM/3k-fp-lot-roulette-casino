@@ -67,18 +67,6 @@ body {
     margin: 20px 0;
 }
 
-.charges-info {
-    text-align: center;
-    margin: 20px 0;
-    color: white;
-    font-size: 18px;
-}
-
-#timer {
-    font-size: 14px;
-    margin-top: 5px;
-}
-
 main {
     padding: 15px;
     position: relative;
@@ -166,15 +154,15 @@ main {
 }
 
 .arrow img {
-    width: 14px;
+    width: 14px; /* Настройте размер стрелок по необходимости */
     height: auto;
     vertical-align: middle;
-    filter: brightness(70%);
+    filter: brightness(70%); /* Делает изображение тусклым как оригинальный цвет #7a90b0 */
     transition: filter 0.3s;
 }
 
 .arrow:hover img {
-    filter: brightness(100%);
+    filter: brightness(100%); /* При наведении становится ярче как #fff */
 }
 
 #trapCount {
@@ -441,4 +429,11 @@ main {
         padding: 8px;
         font-size: 13px;
     }
+}
+/* Добавьте это в конец существующего mines.css */
+.charges-info {
+    text-align: center;
+    color: #D1E8FF;
+    font-size: 16px;
+    margin: 10px 0;
 }

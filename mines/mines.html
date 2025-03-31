@@ -11,10 +11,6 @@
 <button class="menu-button" id="menuButton">←</button>
 <div class="container">
     <main>
-        <div class="charges-info" id="chargesInfo">
-            Заряды: <span id="chargeCount">0</span>/5
-            <div id="timer">Обновление: 30:00</div>
-        </div>
         <div class="grid-container">
             <div class="grid" id="grid"></div>
         </div>
@@ -23,6 +19,9 @@
             <span id="trapCount">1</span>
             <span> ловушек</span>
             <button class="arrow" id="increase"><img src="images/arrowright.png" alt="Increase"></button>
+        </div>
+        <div class="charges-info">
+            <span>Заряды: </span><span id="chargeCount">5</span>
         </div>
         <div class="button-group">
             <button class="action-button disabled" id="mineButton">
@@ -45,7 +44,7 @@
 
 <img src="images/ico.png" alt="Bottom Image" class="bottom-image">
 
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script src="mines.js"></script>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 </body>
 </html>

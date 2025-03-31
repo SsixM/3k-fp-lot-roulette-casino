@@ -10,10 +10,6 @@
 <div class="stars"></div>
 <button class="menu-button" id="menuButton">←</button>
 <div class="container">
-    <div class="charges-info" id="chargesInfo">
-        Заряды: <span id="chargeCount">0</span>/5
-        <div id="timer">Обновление: 30:00</div>
-    </div>
     <div class="coin-container">
         <div class="coin" id="coin">
             <img src="images/coineagle.png" alt="Eagle" class="coin-face">
@@ -29,6 +25,9 @@
             <img src="images/cointail.png" alt="Tail" class="card-icon">
             <span class="card-text">Решка</span>
         </div>
+    </div>
+    <div class="charges-info">
+        <span>Заряды: </span><span id="chargeCount">5</span>
     </div>
     <button class="signal-button disabled" id="signalButton">
         <span class="button-text">Получить сигнал</span>
@@ -48,7 +47,7 @@
 
 <img src="images/ico.png" alt="Bottom Image" class="bottom-image">
 
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script src="Coin.js"></script>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 </body>
 </html>

@@ -72,18 +72,6 @@ body {
     margin: 20px 0;
 }
 
-.charges-info {
-    text-align: center;
-    margin: 20px 0;
-    color: white;
-    font-size: 18px;
-}
-
-#timer {
-    font-size: 14px;
-    margin-top: 5px;
-}
-
 .coin-container {
     width: 100px;
     height: 100px;
@@ -256,6 +244,7 @@ body {
 
 .modal.active {
     display: flex;
+    /* Removed transform: translateY(-70px) from here */
 }
 
 .modal-content {
@@ -266,7 +255,7 @@ body {
     max-width: 280px;
     text-align: center;
     box-shadow: 0px 0px 15px 3px rgba(20,27,46, 0.1);
-    transform: translateY(-70px);
+    transform: translateY(-70px); /* Moved transform here to raise only the content */
 }
 
 .modal-content h2 {
@@ -433,4 +422,11 @@ body {
         padding: 8px;
         font-size: 13px;
     }
+}
+/* Добавьте это в конец существующего Coin.css */
+.charges-info {
+    text-align: center;
+    color: #D1E8FF;
+    font-size: 16px;
+    margin: 10px 0;
 }
