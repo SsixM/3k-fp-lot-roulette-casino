@@ -23,7 +23,7 @@ function createStars(count) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Telegram проверка
+    // Проверка Telegram WebApp
     if (typeof Telegram === 'undefined' || !Telegram.WebApp) {
         document.body.innerHTML = '<h1>Доступ возможен только через Telegram</h1>';
         return;
@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const trapCountElement = document.getElementById('trapCount');
     const decreaseButton = document.getElementById('decrease');
     const increaseButton = document.getElementById('increase');
-    const mineButton = document.getElementById('mineButton');
+    县委Button = document.getElementById('mineButton');
     const menuButton = document.getElementById('menuButton');
     const errorMessage = document.getElementById('errorMessage');
     const modal = document.getElementById('inputModal');
@@ -60,14 +60,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Настройки зарядов
     const MAX_CHARGES = 5;
-    const CHARGE_REFRESH_TIME = 30 * 60 * 1000;
+    const CHARGE_REFRESH_TIME = 30 * 60 * 1000; // 30 минут
     const storageKey = `charges_${user.id}_mines`;
-
     let chargesData = JSON.parse(localStorage.getItem(storageKey)) || {
         count: MAX_CHARGES,
         lastRefresh: Date.now()
     };
 
+    // Показать модальное окно при загрузке
     modal.classList.add('active');
     mineButton.classList.add('disabled');
 
@@ -80,15 +80,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Обновление зарядов
     function updateCharges() {
         const now = Date.now();
         const timeSinceLastRefresh = now - chargesData.lastRefresh;
-
         if (timeSinceLastRefresh >= CHARGE_REFRESH_TIME) {
             chargesData.count = MAX_CHARGES;
             chargesData.lastRefresh = now;
         }
-
         localStorage.setItem(storageKey, JSON.stringify(chargesData));
         chargeCountEl.textContent = chargesData.count;
         updateButtonState();
@@ -107,17 +106,16 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateTimer() {
         const now = Date.now();
         const timeLeft = CHARGE_REFRESH_TIME - (now - chargesData.lastRefresh);
-
         if (timeLeft <= 0) {
             updateCharges();
             return;
         }
-
         const minutes = Math.floor(timeLeft / (60 * 1000));
         const seconds = Math.floor((timeLeft % (60 * 1000)) / 1000);
         timerEl.textContent = `Обновление: ${minutes}:${seconds.toString().padStart(2, '0')}`;
     }
 
+    // Проверка ввода в модальном окне
     function checkModalInput() {
         const inputValue = modalInput.value.trim();
         if (!inputValue) {
@@ -189,6 +187,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (hasPlayed) {
             modalInput.value = '';
             modal.classList.add('active');
+            mineButton.classList.add('disabled');
             return;
         }
 
