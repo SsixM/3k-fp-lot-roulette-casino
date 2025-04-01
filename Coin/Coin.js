@@ -226,4 +226,5 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     createStars();
     loadCharges();
+    updateCooldownTimer(); // Инициализация таймера при загрузке
 });
