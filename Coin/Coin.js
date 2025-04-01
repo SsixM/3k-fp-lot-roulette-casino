@@ -21,28 +21,7 @@ function createStars() {
     }
 }
 
-async function initializeApp() {
-    return new Promise((resolve) => {
-        const checkTelegram = () => {
-            if (window.Telegram && window.Telegram.WebApp) {
-                Telegram.WebApp.ready();
-                Telegram.WebApp.expand();
-                resolve(true);
-            } else {
-                setTimeout(checkTelegram, 100);
-            }
-        };
-        checkTelegram();
-    });
-}
-
-document.addEventListener('DOMContentLoaded', async () => {
-    const isTelegram = await initializeApp();
-    if (!isTelegram) {
-        document.body.innerHTML = '<h1 style="color: white; text-align: center;">Доступ возможен только через Telegram</h1>';
-        return;
-    }
-
+document.addEventListener('DOMContentLoaded', () => {
     const coin = document.getElementById('coin');
     const signalButton = document.getElementById('signalButton');
     const eagleCard = document.getElementById('eagleCard');
@@ -123,7 +102,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     setInterval(updateCooldownTimer, 1000);
 
     modal.classList.add('active');
-    signalButton.classList.add('disabled');
 
     function checkModalInput() {
         const inputValue = modalInput.value.trim();
@@ -214,7 +192,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     menuButton.addEventListener('click', () => {
-        Telegram.WebApp.close();
+        window.location.href = 'index.html'; // Замена Telegram.WebApp.close()
     });
 
     document.addEventListener('gesturestart', (e) => e.preventDefault(), { passive: false });
@@ -226,5 +204,5 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     createStars();
     loadCharges();
-    updateCooldownTimer(); // Инициализация таймера при загрузке
+    updateCooldownTimer();
 });

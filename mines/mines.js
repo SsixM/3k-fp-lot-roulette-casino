@@ -1,13 +1,12 @@
-function createStars(count) {
+function createStars() {
     const starsContainer = document.querySelector('.stars');
-    starsContainer.innerHTML = '';
-    for (let i = 0; i < count; i++) {
+    for (let i = 0; i < 50; i++) {
         const star = document.createElement('div');
         star.style.position = 'absolute';
-        star.style.width = '4px';
-        star.style.height = `${Math.random() * 6 + 4}px`;
+        star.style.width = '2px';
+        star.style.height = `${Math.random() * 4 + 2}px`;
         star.style.background = 'linear-gradient(to bottom, #fff, rgba(255, 255, 255, 0))';
-        star.style.boxShadow = '0 0 8px #fff';
+        star.style.boxShadow = '0 0 5px #fff';
         star.style.borderRadius = '50%';
 
         const x = Math.random() * window.innerWidth;
@@ -22,33 +21,9 @@ function createStars(count) {
     }
 }
 
-async function initializeApp() {
-    return new Promise((resolve) => {
-        const checkTelegram = () => {
-            if (window.Telegram && window.Telegram.WebApp) {
-                Telegram.WebApp.ready();
-                Telegram.WebApp.expand();
-                resolve(true);
-            } else {
-                setTimeout(checkTelegram, 100);
-            }
-        };
-        checkTelegram();
-    });
-}
-
-document.addEventListener('DOMContentLoaded', async () => {
-    const isTelegram = await initializeApp();
-    if (!isTelegram) {
-        document.body.innerHTML = '<h1 style="color: white; text-align: center;">Доступ возможен только через Telegram</h1>';
-        return;
-    }
-
+document.addEventListener('DOMContentLoaded', () => {
     const grid = document.getElementById('grid');
-    const trapCountElement = document.getElementById('trapCount');
-    const decreaseButton = document.getElementById('decrease');
-    const increaseButton = document.getElementById('increase');
-    const mineButton = document.getElementById('mineButton');
+    const startButton = document.getElementById('startButton');
     const menuButton = document.getElementById('menuButton');
     const errorMessage = document.getElementById('errorMessage');
     const modal = document.getElementById('inputModal');
@@ -56,12 +31,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     const modalSubmit = document.getElementById('modalSubmit');
     const modalError = document.getElementById('modalError');
     const chargeCountElement = document.getElementById('chargeCount');
-    let trapCount = 1;
-    const allowedTraps = [1, 3, 5, 7];
-    let isLoading = false;
+    const cooldownTimerElement = document.getElementById('cooldownTimer');
+    let gameActive = false;
     let userText = '';
     let hasPlayed = false;
     let charges = 5;
+    const maxCharges = 5;
+    const resetInterval = 30 * 60 * 1000; // 30 минут
+    const gridSize = 25;
+    const mineCount = 5;
+    let mines = [];
 
     function loadCharges() {
         const saved = localStorage.getItem('minesCharges');
@@ -69,15 +48,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         const now = Date.now();
         if (saved && lastReset) {
             const timeElapsed = now - parseInt(lastReset);
-            if (timeElapsed >= 30 * 60 * 1000) {
-                charges = 5;
+            if (timeElapsed >= resetInterval) {
+                charges = maxCharges;
                 localStorage.setItem('minesCharges', charges);
                 localStorage.setItem('minesLastReset', now);
             } else {
                 charges = parseInt(saved);
             }
         } else {
-            charges = 5;
+            charges = maxCharges;
             localStorage.setItem('minesCharges', charges);
             localStorage.setItem('minesLastReset', now);
         }
@@ -90,37 +69,40 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function updateChargeDisplay() {
-        chargeCountElement.textContent = charges;
+        chargeCountElement.textContent = `${charges}/${maxCharges}`;
         if (charges === 0) {
-            mineButton.classList.add('disabled');
+            startButton.classList.add('disabled');
+            updateCooldownTimer();
         } else {
-            mineButton.classList.remove('disabled');
+            startButton.classList.remove('disabled');
+            cooldownTimerElement.style.display = 'none';
         }
     }
 
-    function checkChargeReset() {
+    function updateCooldownTimer() {
         const lastReset = parseInt(localStorage.getItem('minesLastReset') || 0);
         const now = Date.now();
-        if (now - lastReset >= 30 * 60 * 1000) {
-            charges = 5;
-            saveCharges();
-            updateChargeDisplay();
+        const timeElapsed = now - lastReset;
+        const timeLeft = resetInterval - timeElapsed;
+
+        if (timeLeft > 0 && charges === 0) {
+            const minutes = Math.floor(timeLeft / (60 * 1000));
+            const seconds = Math.floor((timeLeft % (60 * 1000)) / 1000);
+            cooldownTimerElement.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+            cooldownTimerElement.style.display = 'block';
+        } else {
+            cooldownTimerElement.style.display = 'none';
+            if (charges === 0) {
+                charges = maxCharges;
+                saveCharges();
+                updateChargeDisplay();
+            }
         }
     }
 
-    setInterval(checkChargeReset, 1000);
+    setInterval(updateCooldownTimer, 1000);
 
     modal.classList.add('active');
-    mineButton.classList.add('disabled');
-
-    function updateGrid() {
-        grid.innerHTML = '';
-        for (let i = 0; i < 25; i++) {
-            const button = document.createElement('button');
-            button.className = 'grid-button';
-            grid.appendChild(button);
-        }
-    }
 
     function checkModalInput() {
         const inputValue = modalInput.value.trim();
@@ -150,52 +132,66 @@ document.addEventListener('DOMContentLoaded', async () => {
         return true;
     }
 
-    function getStarCount(trapCount) {
-        switch (trapCount) {
-            case 1: return 6;
-            case 3: return 5;
-            case 5: return 4;
-            case 7: return 2;
-            default: return 0;
+    function createGrid() {
+        grid.innerHTML = '';
+        mines = [];
+        const cells = Array(gridSize).fill(false);
+
+        // Случайно размещаем мины
+        while (mines.length < mineCount) {
+            const index = Math.floor(Math.random() * gridSize);
+            if (!mines.includes(index)) mines.push(index);
+        }
+
+        for (let i = 0; i < gridSize; i++) {
+            const cell = document.createElement('div');
+            cell.classList.add('cell');
+            cell.dataset.index = i;
+            cell.addEventListener('click', handleCellClick);
+            grid.appendChild(cell);
         }
     }
 
-    decreaseButton.addEventListener('click', () => {
-        const currentIndex = allowedTraps.indexOf(trapCount);
-        if (currentIndex > 0) {
-            trapCount = allowedTraps[currentIndex - 1];
-            trapCountElement.textContent = trapCount;
+    function handleCellClick(e) {
+        if (!gameActive) return;
+        const index = parseInt(e.target.dataset.index);
+        if (mines.includes(index)) {
+            e.target.classList.add('mine');
+            endGame(false);
+        } else {
+            e.target.classList.add('open');
         }
-    });
+    }
 
-    increaseButton.addEventListener('click', () => {
-        const currentIndex = allowedTraps.indexOf(trapCount);
-        if (currentIndex < allowedTraps.length - 1) {
-            trapCount = allowedTraps[currentIndex + 1];
-            trapCountElement.textContent = trapCount;
+    function endGame(won) {
+        gameActive = false;
+        startButton.textContent = 'Начать игру';
+        hasPlayed = true;
+        userText = '';
+        if (!won) {
+            errorMessage.textContent = 'Вы проиграли!';
+            errorMessage.style.display = 'block';
         }
-    });
+    }
 
     modalSubmit.addEventListener('click', () => {
         if (checkModalInput()) {
             userText = modalInput.value.trim();
             modal.classList.remove('active');
-            if (charges > 0) mineButton.classList.remove('disabled');
-            if (hasPlayed) {
-                hasPlayed = false;
-            }
+            if (charges > 0) startButton.classList.remove('disabled');
+            if (hasPlayed) hasPlayed = false;
         }
     });
 
     modalInput.addEventListener('input', checkModalInput);
 
-    mineButton.addEventListener('click', () => {
-        if (isLoading || mineButton.classList.contains('disabled') || charges === 0) return;
+    startButton.addEventListener('click', () => {
+        if (startButton.classList.contains('disabled') || charges === 0) return;
 
         if (hasPlayed) {
             modalInput.value = '';
             modal.classList.add('active');
-            mineButton.classList.add('disabled');
+            startButton.classList.add('disabled');
             return;
         }
 
@@ -203,40 +199,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         saveCharges();
         updateChargeDisplay();
 
-        isLoading = true;
-        mineButton.classList.add('loading');
-        const buttons = grid.getElementsByClassName('grid-button');
-        for (let button of buttons) {
-            button.classList.remove('active');
-        }
-
-        const starCount = getStarCount(trapCount);
-        const trapIndices = new Set();
-        while (trapIndices.size < starCount) {
-            const randomIndex = Math.floor(Math.random() * buttons.length);
-            trapIndices.add(randomIndex);
-        }
-
-        let delay = 0;
-        const trapArray = Array.from(trapIndices);
-        trapArray.forEach((index, i) => {
-            setTimeout(() => {
-                buttons[index].classList.add('active');
-                if (i === trapArray.length - 1) {
-                    mineButton.classList.remove('loading');
-                    isLoading = false;
-                    hasPlayed = true;
-                    userText = '';
-                }
-            }, delay);
-            delay += 500;
-        });
-
-        createStars(6);
+        gameActive = true;
+        startButton.textContent = 'Игра идет...';
+        errorMessage.style.display = 'none';
+        createGrid();
     });
 
     menuButton.addEventListener('click', () => {
-        Telegram.WebApp.close();
+        window.location.href = 'index.html';
     });
 
     document.addEventListener('gesturestart', (e) => e.preventDefault(), { passive: false });
@@ -246,7 +216,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (e.touches.length > 1) e.preventDefault();
     }, { passive: false });
 
-    createStars(6);
-    updateGrid();
+    createStars();
     loadCharges();
+    updateCooldownTimer();
 });
