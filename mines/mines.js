@@ -206,7 +206,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     menuButton.addEventListener('click', () => {
-        window.location.href = 'https://devastcheats.github.io/3k-fp-lot-roulette-casino/menu.html'; // Замена Telegram.WebApp.close()
+        window.location.href = 'https://devastcheats.github.io/3k-fp-lot-roulette-casino'; // Замена Telegram.WebApp.close()
     });
 
     document.addEventListener('gesturestart', (e) => e.preventDefault(), { passive: false });
