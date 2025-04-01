@@ -1,16 +1,16 @@
 body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    font-weight: normal;
     background: rgb(13,31,67);
     background: linear-gradient(190deg, rgba(13,31,67,1) 0%, rgba(10,15,33,1) 50%, rgba(13,31,67,1) 100%);
-    margin: 0;
-    padding: 0;
-    min-height: 100vh;
-    font-family: Arial, sans-serif;
-    color: white;
-    position: relative;
-    overflow-x: hidden;
+    color: #fff;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
+    min-height: 100vh;
+    overflow-x: hidden;
     touch-action: pan-y;
     -webkit-user-select: none;
     user-select: none;
@@ -84,52 +84,129 @@ body {
 }
 
 .container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 15px;
-    background: linear-gradient(180deg, #141b2e, #141b2e 50%);
-    border-radius: 15px;
     width: 100%;
-    max-width: 330px;
+    max-width: 370px;
+    background: linear-gradient(180deg, #141b2e, #141b2e 50%);
+    border-radius: 20px;
+    overflow: hidden;
     box-shadow: 0px 0px 15px 3px rgba(20,27,46, 0.1);
     position: relative;
-    z-index: 1;
-    padding: 15px;
     margin: 20px 0;
+}
+
+main {
+    padding: 15px;
+    position: relative;
+    z-index: 2;
+}
+
+.grid-container {
+    padding: 8px;
+    border-radius: 15px;
+    margin-bottom: 15px;
 }
 
 .grid {
     display: grid;
-    grid-template-columns: repeat(5, 50px);
-    gap: 5px;
-    margin: 0 auto;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 4px;
 }
 
-.cell {
-    width: 50px;
-    height: 50px;
-    background: #252b3a;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: background 0.3s;
-}
-
-.cell.open {
-    background: #60A5FA;
-}
-
-.cell.mine {
-    background: #ff4444;
-}
-
-.signal-button {
-    font-family: Montserrat, sans-serif;
+.grid-button {
     width: 100%;
-    max-width: 280px;
+    padding-bottom: 100%;
+    border: none;
+    border-radius: 6px;
+    cursor: default;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.1s;
+}
+
+.grid-button:nth-child(odd) {
+    background: url('images/cubic_smooth.png') center/cover no-repeat;
+}
+
+.grid-button:nth-child(even) {
+    background: url('images/cubic.png') center/cover no-repeat;
+}
+
+.grid-button:hover {
+    transform: translateY(1px) scale(0.99);
+}
+
+.grid-button.active {
+    background: transparent;
+}
+
+.grid-button.active::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px;
+    height: 40px;
+    background: url('images/star.png') center/contain no-repeat;
+    opacity: 0;
+    animation: starAppear 1s ease-out forwards;
+}
+
+.level-info {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 12px;
+    background-color: #141414;
+    color: white;
+    font-size: 15px;
+    gap: 4px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.level-info span:nth-child(2) {
+    color: #D1E8FF;
+    font-weight: 800;
+}
+
+.arrow {
+    background: none;
+    border: none;
+    color: #7a90b0;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 0 4px;
+    transition: opacity 0.3s;
+}
+
+.arrow img {
+    width: 14px;
+    height: auto;
+    vertical-align: middle;
+    filter: brightness(70%);
+    transition: filter 0.3s;
+}
+
+.arrow:hover img {
+    filter: brightness(100%);
+}
+
+#trapCount {
+    font-weight: bold;
+    margin: 0 8px;
+    color: #D1E8FF;
+}
+
+.button-group {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+}
+
+.action-button {
+    font-family: Montserrat, sans-serif;
+    flex: 1;
     padding: 12px;
     background: linear-gradient(90deg, #3B82F6 0%, #60A5FA 100%);
     border: none;
@@ -143,19 +220,43 @@ body {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
 }
 
-.signal-button:hover {
+.action-button:hover {
     background: linear-gradient(90deg, #60A5FA 0%, #3B82F6 100%);
     transform: translateY(-2px);
 }
 
-.signal-button:active {
+.action-button:active {
     transform: translateY(0);
 }
 
-.signal-button.disabled {
+.action-button.disabled {
     background: linear-gradient(90deg, #666, #444);
     cursor: not-allowed;
     opacity: 0.7;
+}
+
+.action-button.disabled:hover {
+    background: linear-gradient(90deg, #444, #666);
+    transform: none;
+}
+
+.action-button.loading .button-text {
+    opacity: 0;
+}
+
+.action-button .loader {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to right, #3B82F6 0%, #60A5FA 50%, #3B82F6 100%);
+}
+
+.action-button.loading .loader {
+    display: block;
+    animation: loadingBar 1s ease-in-out forwards;
 }
 
 .error-message {
@@ -263,7 +364,96 @@ body {
     z-index: -3;
 }
 
+@keyframes starAppear {
+    0% { opacity: 0; transform: translate(-50%, -50%) scale(0); }
+    100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+@keyframes loadingBar {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
 @keyframes fall {
     0% { transform: translateY(-100vh); opacity: 1; }
     100% { transform: translateY(100vh); opacity: 0; }
+}
+
+@keyframes fadeInStars {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+/* Media Query for 400x700 resolution */
+@media (max-width: 400px) and (max-height: 700px) {
+    .container {
+        max-width: 350px;
+        margin: -100px 0;
+    }
+
+    main {
+        padding: 10px;
+    }
+
+    .grid-container {
+        padding: 6px;
+        margin-bottom: 10px;
+    }
+
+    .grid {
+        gap: 3px;
+    }
+
+    .grid-button {
+        border-radius: 5px;
+    }
+
+    .grid-button.active::after {
+        width: 40px;
+        height: 40px;
+    }
+
+    .level-info {
+        padding: 6px;
+        font-size: 11px;
+        margin-bottom: 10px;
+    }
+
+    .arrow img {
+        width: 12px;
+    }
+
+    #trapCount {
+        margin: 0 6px;
+    }
+
+    .action-button {
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    .bottom-image {
+        width: 120px;
+        bottom: 10px;
+    }
+
+    .modal-content {
+        padding: 12px;
+        max-width: 250px;
+    }
+
+    .modal-content h2 {
+        font-size: 16px;
+        margin-bottom: 10px;
+    }
+
+    .modal-input {
+        padding: 8px 10px;
+        font-size: 13px;
+    }
+
+    .modal-button {
+        padding: 8px;
+        font-size: 13px;
+    }
 }

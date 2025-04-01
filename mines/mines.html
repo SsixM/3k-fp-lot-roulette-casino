@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
-    <title>Mines</title>
-    <link rel="stylesheet" href="mines.css?v=1.32">
+    <title>Игра с сеткой</title>
+    <link rel="stylesheet" href="mines.css?v=1.2.5">
 </head>
 <body>
 <div class="stars"></div>
@@ -14,9 +14,24 @@
     <div class="cooldown-timer" id="cooldownTimer"></div>
 </div>
 <div class="container">
-    <div class="grid" id="grid"></div>
-    <button class="signal-button" id="startButton">Начать игру</button>
-    <div class="error-message" id="errorMessage"></div>
+    <main>
+        <div class="grid-container">
+            <div class="grid" id="grid"></div>
+        </div>
+        <div class="level-info">
+            <button class="arrow" id="decrease"><img src="images/arrowleft.png" alt="Decrease"></button>
+            <span id="trapCount">1</span>
+            <span> ловушек</span>
+            <button class="arrow" id="increase"><img src="images/arrowright.png" alt="Increase"></button>
+        </div>
+        <div class="button-group">
+            <button class="action-button disabled" id="mineButton">
+                <span class="button-text">Получить сигнал</span>
+                <div class="loader"></div>
+            </button>
+        </div>
+        <div class="error-message" id="errorMessage"></div>
+    </main>
 </div>
 
 <div class="modal" id="inputModal">
@@ -30,6 +45,8 @@
 
 <img src="images/ico.png" alt="Bottom Image" class="bottom-image">
 
-<script src="Mines.js?v=1.0"></script>
+<script src="mines.js?v=1.1"></script>
+<script src="https://telegram.org/js/telegram-web-app.js?v=1.1"></script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'929915976e504c31',t:'MTc0MzUyMDk3MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>
