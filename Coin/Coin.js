@@ -21,7 +21,6 @@ function createStars() {
     }
 }
 
-// Асинхронная функция для проверки Telegram Web App
 async function initializeApp() {
     return new Promise((resolve) => {
         const checkTelegram = () => {
@@ -30,7 +29,7 @@ async function initializeApp() {
                 Telegram.WebApp.expand();
                 resolve(true);
             } else {
-                setTimeout(checkTelegram, 100); // Проверяем каждые 100мс
+                setTimeout(checkTelegram, 100);
             }
         };
         checkTelegram();
@@ -55,10 +54,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     const modalSubmit = document.getElementById('modalSubmit');
     const modalError = document.getElementById('modalError');
     const chargeCountElement = document.getElementById('chargeCount');
+    const cooldownTimerElement = document.getElementById('cooldownTimer');
     let isFlipping = false;
     let userText = '';
     let hasFlipped = false;
     let charges = 5;
+    const maxCharges = 5;
+    const resetInterval = 30 * 60 * 1000; // 30 минут в миллисекундах
 
     function loadCharges() {
         const saved = localStorage.getItem('coinCharges');
@@ -66,15 +68,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         const now = Date.now();
         if (saved && lastReset) {
             const timeElapsed = now - parseInt(lastReset);
-            if (timeElapsed >= 30 * 60 * 1000) {
-                charges = 5;
+            if (timeElapsed >= resetInterval) {
+                charges = maxCharges;
                 localStorage.setItem('coinCharges', charges);
                 localStorage.setItem('coinLastReset', now);
             } else {
                 charges = parseInt(saved);
             }
         } else {
-            charges = 5;
+            charges = maxCharges;
             localStorage.setItem('coinCharges', charges);
             localStorage.setItem('coinLastReset', now);
         }
@@ -87,25 +89,38 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function updateChargeDisplay() {
-        chargeCountElement.textContent = charges;
+        chargeCountElement.textContent = `${charges}/${maxCharges}`;
         if (charges === 0) {
             signalButton.classList.add('disabled');
+            updateCooldownTimer();
         } else {
             signalButton.classList.remove('disabled');
+            cooldownTimerElement.style.display = 'none';
         }
     }
 
-    function checkChargeReset() {
+    function updateCooldownTimer() {
         const lastReset = parseInt(localStorage.getItem('coinLastReset') || 0);
         const now = Date.now();
-        if (now - lastReset >= 30 * 60 * 1000) {
-            charges = 5;
-            saveCharges();
-            updateChargeDisplay();
+        const timeElapsed = now - lastReset;
+        const timeLeft = resetInterval - timeElapsed;
+
+        if (timeLeft > 0 && charges === 0) {
+            const minutes = Math.floor(timeLeft / (60 * 1000));
+            const seconds = Math.floor((timeLeft % (60 * 1000)) / 1000);
+            cooldownTimerElement.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+            cooldownTimerElement.style.display = 'block';
+        } else {
+            cooldownTimerElement.style.display = 'none';
+            if (charges === 0) {
+                charges = maxCharges;
+                saveCharges();
+                updateChargeDisplay();
+            }
         }
     }
 
-    setInterval(checkChargeReset, 1000);
+    setInterval(updateCooldownTimer, 1000);
 
     modal.classList.add('active');
     signalButton.classList.add('disabled');
