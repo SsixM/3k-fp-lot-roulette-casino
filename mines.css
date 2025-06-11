@@ -45,6 +45,7 @@ body {
     cursor: pointer;
     transition: color 0.3s, transform 0.1s;
     z-index: 3;
+    display: none;
 }
 
 .menu-button:hover {
